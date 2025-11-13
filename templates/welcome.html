@@ -2,11 +2,83 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="widht=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome</title>
+    <style>
+        @font-face {
+            font-family: "JetBrains Mono";
+            src: url("/static/fonts/JetBrainsMono-2.304/webfonts/JetBrainsMono-Regular.woff2") format("woff2");
+            font-weight: 400;
+        }
+        @font-face {
+            font-family: "JetBrains Mono";
+            src: url("/static/fonts/JetBrainsMono-2.304/webfonts/JetBrainsMono-Bold.woff2") format("woff2");
+            font-weight: 700;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0d0d0f;
+            font-family: "JetBrains Mono", monospace;
+            color: #f2efe6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .welcome-card {
+            background: #1c1c1f;
+            width: 420px;
+            padding: 40px;
+            border-radius: 14px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.55);
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .mascot {
+            width: 150px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        p {
+            font-size: 16px;
+            color: #d5d3cd;
+            margin-bottom: 25px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #a6c48a; /* cat-eye green */
+            color: #1c1c1f;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: 0.25s;
+        }
+
+        .button:hover {
+            background: #9ab983;
+        }
+    </style>
 </head>
 <body>
-    <h2>Welcome!</h2>
-    <p>You have successfully logged in.</p>
+    <div class="welcome-card">
+        <img class="mascot" src="/static/images/yuki.png" alt="Mascot">
+        <h2>Welcome!</h2>
+        <p>You have successfully logged in.</p>
+        <a href="/" class="button">Log Out</a>
+    </div>
 </body>
 </html>
