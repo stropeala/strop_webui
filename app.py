@@ -4,8 +4,8 @@ from flask import Flask, render_template, request, redirect, url_for
 app = Flask(__name__) #Create a Flask app to handle the requests
 
 #Defined the username and password for the login
-USERNAME = "petre.ispir2002@protonmail.com"
-PASSWORD = "PGpBFWDnuUBs@X2Mp%T9"
+USERNAME = "admin"
+PASSWORD = "admin"
 
 @app.route("/", methods=["GET", "POST"]) #Creating the main route for the login
 def login():
