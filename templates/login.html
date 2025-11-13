@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+
     <style>
-        /* Load local font */
+        /* local font */
         @font-face {
             font-family: "JetBrains Mono";
             src: url("/static/fonts/JetBrainsMono-2.304/webfonts/JetBrainsMono-Regular.woff2") format("woff2");
@@ -23,9 +24,9 @@
         body {
             margin: 0;
             padding: 0;
-            background: #0d0d0f; /* deep charcoal */
+            background: #0d0d0f; /* charcoal */
             font-family: "JetBrains Mono", monospace;
-            color: #f2efe6; /* soft off-white */
+            color: #f2efe6; /* off-white */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -40,17 +41,86 @@
             box-shadow: 0 0 25px rgba(0,0,0,0.55);
             text-align: center;
             border: 1px solid rgba(255,255,255,0.04);
+            position: relative;
         }
 
-        .mascot {
+        /* wrap mascot + bubble */
+        .mascot-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 16px; /* space below mascot */
+        }
+
+        /* angry ascot */
+        .mascot,
+        .mascot-angry {
             width: 150px;
             height: auto;
-            margin-bottom: 20px;
+            /* no white flash */
+            opacity: 0;
+            transition: opacity 0.25s ease-in;
+            display: block;
         }
 
-        /* Title is white */
+        /* fade in */
+        .mascot.loaded,
+        .mascot-angry.loaded {
+            opacity: 1;
+        }
+
+        /* shake animation */
+        .mascot-angry.loaded {
+            animation: shake 0.4s ease-in-out 0.25s;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-4px); }
+            80% { transform: translateX(4px); }
+            100% { transform: translateX(0); }
+        }
+
+        /* speech bubble */
+        .speech-bubble {
+            background: #a6c48a;
+            color: #1c1c1f;
+            font-weight: 700;
+            padding: 8px 14px;
+            border-radius: 8px;
+            display: inline-block;
+            font-size: 13px;
+            position: absolute;
+            left: 50%;
+            bottom: 100%;
+            transform: translateX(-50%) translateY(-8px);
+            opacity: 0;
+            transition: opacity 0.25s ease-in;
+            white-space: nowrap;
+        }
+
+        /* bubble fades in */
+        .speech-bubble.loaded {
+            opacity: 1;
+        }
+
+        .speech-bubble::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid #a6c48a; /* little triangle pointing down */
+        }
+
+        /* white title */
         h2 {
-            margin-top: 5px;
+            margin-top: 10px;
             margin-bottom: 20px;
             font-size: 26px;
             font-weight: 700;
@@ -72,22 +142,20 @@
             border: 1px solid #2e2e31;
             outline: none;
             font-size: 16px;
-
             font-family: "JetBrains Mono", monospace; /* terminal-style */
-            font-weight: 700; /* BOLD TERMINAL LOOK */
-
+            font-weight: 700; /* bold-terminal-style */
             background: #121214;
             color: #ffffff;
             transition: 0.2s;
         }
 
-        /* cat-eye green */
+        /* green border */
         input:focus {
             border-color: #a6c48a;
             box-shadow: 0 0 0 2px rgba(166, 196, 138, 0.35);
         }
 
-        /* button now cat-eye green */
+        /* green button */
         button {
             margin-top: 20px;
             width: 100%;
@@ -110,18 +178,24 @@
             color: #ff6b6b;
             background: rgba(255, 50, 50, 0.1);
             padding: 10px;
-            margin-bottom: 15px;
+            margin: 15px 0;
             border-radius: 8px;
         }
     </style>
 </head>
 <body>
     <div class="login-card">
-        <!-- Cat mascot -->
-        <img class="mascot" src="/static/images/yuki.png" alt="Cat Mascot">
+        <div class="mascot-wrapper">
+            {% if error %}
+                <img class="mascot-angry" src="/static/images/yuki_angry.png" alt="Angry Mascot">
+                <div class="speech-bubble">HEY!<br>That's wrong!</div>
+            {% else %}
+                <img class="mascot" src="/static/images/yuki.png" alt="Cat Mascot">
+            {% endif %}
+        </div>
         <h2>Strop-WebUI</h2>
         {% if error %}
-            <div class="error">{{ error }}</div>
+            <div class="error">Invalid username or password</div>
         {% endif %}
         <form method="POST">
             <label for="username">Username</label>
@@ -131,5 +205,16 @@
             <button type="submit">Login</button>
         </form>
     </div>
+
+    <!-- animation trigger -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const mascots = document.querySelectorAll(".mascot, .mascot-angry");
+            const bubbles = document.querySelectorAll(".speech-bubble");
+            mascots.forEach(m => m.classList.add("loaded"));
+            bubbles.forEach(b => b.classList.add("loaded"));
+        });
+    </script>
+
 </body>
 </html>
