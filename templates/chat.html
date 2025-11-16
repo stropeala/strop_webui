@@ -3,97 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Local AI Chatbot</title>
+    <title>Strop-WebUI</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
+        @font-face {
+            font-family: "JetBrains Mono";
+            src: url("/static/fonts/JetBrainsMono-2.304/webfonts/JetBrainsMono-Regular.woff2") format("woff2");
+            font-weight: 400;
+        }
+        @font-face {
+            font-family: "JetBrains Mono";
+            src: url("/static/fonts/JetBrainsMono-2.304/webfonts/JetBrainsMono-Bold.woff2") format("woff2");
+            font-weight: 700;
         }
 
-        .container {
-            width: 50%;
-            margin: 0 auto;
-            margin-top: 40px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        body {
+            margin: 0;
+            padding: 0;
+            background: #0d0d0f;
+            font-family: "JetBrains Mono", monospace;
+            color: #f2efe6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .chat-card {
+            background: #1c1c1f;
+            width: 70%;
+            max-width: 1100px;
+            padding: 35px;
+            border-radius: 14px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.55);
+            border: 1px solid rgba(255,255,255,0.04);
         }
 
         h1 {
             text-align: center;
-            margin: 0;
+            margin-bottom: 20px;
+            color: #ffffff;
+            font-weight: 700;
         }
 
         .chat-box {
-            margin-top: 20px;
-            border-top: 2px solid #ddd;
-            padding-top: 20px;
+            background: #121214;
+            border: 1px solid #2e2e31;
+            border-radius: 10px;
+            padding: 20px;
+            height: 650px;
+            overflow-y: auto;
+            line-height: 1.55;
+            font-size: 15px;
         }
 
         .message {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 6px;
+            padding: 14px;
+            margin: 14px 0;
+            border-radius: 8px;
+            max-width: 85%;
+            word-wrap: break-word;
         }
 
         .user-message {
-            background-color: #e1f5fe;
+            background: #a6c48a;
+            color: #1c1c1f;
+            margin-left: auto;
             text-align: right;
+            font-weight: 700;
         }
 
         .bot-message {
-            background-color: #f1f1f1;
+            background: #1f1f22;
+            color: #f2efe6;
+            border: 1px solid #2e2e31;
+        }
+
+        .bot-message a {
+            color: #a6c48a;        /* soft green */
+            font-weight: 700;
+            text-decoration: underline;
+        }
+
+        .bot-message a:hover {
+            color: #c2d9a7;        /* lighter green on hover */
+        }
+
+        /* markdown prettiness */
+        .bot-message h1,
+        .bot-message h2,
+        .bot-message h3 {
+            color: #a6c48a;
+        }
+        .bot-message ul,
+        .bot-message li {
+            margin: 6px 0;
+        }
+        .bot-message strong {
+            color: #d7d5ce;
+        }
+        .bot-message code {
+            background: #2a2a2d;
+            padding: 3px 5px;
+            border-radius: 4px;
         }
 
         form {
-            margin-top: 20px;
+            margin-top: 25px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         input[type="text"] {
             flex: 1;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid #2e2e31;
+            background: #121214;
+            color: #ffffff;
+            font-family: "JetBrains Mono", monospace;
+            font-weight: 700;
         }
 
         button {
-            padding: 10px 20px;
-            background-color: #007BFF;
-            color: white;
+            padding: 14px 22px;
+            background: #a6c48a;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
+            color: #1c1c1f;
+            font-weight: 700;
             cursor: pointer;
         }
 
-        button:hover {
-            background-color: #0069d9;
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #a6c48a;
+            font-weight: 700;
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Chatbot</h1>
-        <div class="chat-box">
-            {% if user_input %}
-                <div class="message user-message">{{ user_input }}</div>
-                <div class="message bot-message">{{ bot_reply }}</div>
-            {% endif %}
-        </div>
-        <form method="POST">
-            <input
-                type="text"
-                name="user_input"
-                placeholder="Type your question..."
-                value="{{ user_input }}"
-                required
-            >
-            <button type="submit">Send</button>
-        </form>
+<div class="chat-card">
+    <h1>gemma3:4b</h1>
+    <div class="chat-box">
+
+        {% if user_input %}
+            <div class="message user-message">{{ user_input }}</div>
+        {% endif %}
+
+        {% if bot_reply %}
+            <div class="message bot-message">{{ bot_reply | safe }}</div>
+        {% endif %}
+
     </div>
+    <form method="POST">
+        <input type="text" name="user_input" placeholder="Type your message..." required>
+        <button type="submit">Send</button>
+    </form>
+    <a href="/welcome" class="back-link">← Back</a>
+</div>
 </body>
 </html>
