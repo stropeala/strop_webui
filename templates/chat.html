@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Strop-WebUI</title>
     <style>
+        /* fonts */
         @font-face {
             font-family: "JetBrains Mono";
             src: url("/static/fonts/JetBrainsMono-2.304/webfonts/JetBrainsMono-Regular.woff2") format("woff2");
@@ -17,137 +18,160 @@
         }
 
         body {
-            margin: 0;
-            padding: 0;
             background: #0d0d0f;
             font-family: "JetBrains Mono", monospace;
             color: #f2efe6;
+            margin: 0;
+            padding: 0;
+
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            min-height: 100vh;
+
+            height: 100vh;
         }
 
-        .chat-card {
+        .chat-container {
+            width: 60%;
+            max-width: 900px;
+            height: 90vh;
+            margin-top: 30px;
+
             background: #1c1c1f;
-            width: 70%;
-            max-width: 1100px;
-            padding: 35px;
-            border-radius: 14px;
-            box-shadow: 0 0 25px rgba(0,0,0,0.55);
-            border: 1px solid rgba(255,255,255,0.04);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+
+            box-shadow: 0 0 25px rgba(0,0,0,0.5);
         }
 
-        h1 {
+        .chat-header {
+            padding: 20px;
             text-align: center;
-            margin-bottom: 20px;
-            color: #ffffff;
+            font-size: 22px;
             font-weight: 700;
+            background: #121214;
+            border-bottom: 1px solid #2e2e31;
         }
 
         .chat-box {
-            background: #121214;
-            border: 1px solid #2e2e31;
-            border-radius: 10px;
-            padding: 20px;
-            height: 650px;
+            flex: 1;
+            padding: 25px;
             overflow-y: auto;
-            line-height: 1.55;
-            font-size: 15px;
+        }
+
+        .chat-box::-webkit-scrollbar { width: 10px; }
+        .chat-box::-webkit-scrollbar-thumb {
+            background: #2e2e31;
+            border-radius: 5px;
         }
 
         .message {
-            padding: 14px;
-            margin: 14px 0;
-            border-radius: 8px;
-            max-width: 85%;
-            word-wrap: break-word;
+            padding: 14px 18px;
+            margin: 10px 0;
+            border-radius: 12px;
+            max-width: 75%;
+            line-height: 1.55;
+            font-size: 15px;
         }
 
         .user-message {
             background: #a6c48a;
             color: #1c1c1f;
             margin-left: auto;
-            text-align: right;
+            border-radius: 12px 12px 0 12px;
             font-weight: 700;
         }
 
         .bot-message {
             background: #1f1f22;
-            color: #f2efe6;
             border: 1px solid #2e2e31;
+            color: #f2efe6;
+            border-radius: 12px 12px 12px 0;
         }
 
         .bot-message a {
-            color: #a6c48a;        /* soft green */
-            font-weight: 700;
-            text-decoration: underline;
-        }
-
-        .bot-message a:hover {
-            color: #c2d9a7;        /* lighter green on hover */
-        }
-
-        /* markdown prettiness */
-        .bot-message h1,
-        .bot-message h2,
-        .bot-message h3 {
             color: #a6c48a;
+            font-weight: bold;
+            text-decoration: none;
         }
-        .bot-message ul,
-        .bot-message li {
-            margin: 6px 0;
-        }
-        .bot-message strong {
-            color: #d7d5ce;
-        }
-        .bot-message code {
-            background: #2a2a2d;
-            padding: 3px 5px;
-            border-radius: 4px;
+        .bot-message a:hover {
+            color: #c4e3ab;
         }
 
-        form {
-            margin-top: 25px;
+        /* input area */
+        .input-area {
             display: flex;
-            gap: 12px;
+            align-items: center;
+            gap: 14px;
+            padding: 18px;
+            background: #121214;
+            border-top: 1px solid #2e2e31;
+        }
+
+        /* mascot */
+        .mascot-small {
+            width: 65px;
+            transition: transform 0.25s ease;
+        }
+
+        .mascot-look {
+            transform: translateY(-8px);
         }
 
         input[type="text"] {
             flex: 1;
-            padding: 14px;
-            border-radius: 8px;
+            padding: 14px 18px;
+            border-radius: 10px;
             border: 1px solid #2e2e31;
-            background: #121214;
-            color: #ffffff;
-            font-family: "JetBrains Mono", monospace;
+            background: #1c1c1f;
+
+            /* JetBrains Mono */
+            font-family: "JetBrains Mono", monospace !important;
             font-weight: 700;
+            font-size: 15px;
+            line-height: 1.4;
+            letter-spacing: 0.3px;
+
+            color: #ffffff;
+            outline: none;
+
+            /* remove browser overrides */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
         }
 
         button {
             padding: 14px 22px;
             background: #a6c48a;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             color: #1c1c1f;
             font-weight: 700;
             cursor: pointer;
         }
 
+        button:hover {
+            background: #9ab983;
+        }
+
         .back-link {
-            display: inline-block;
-            margin-top: 20px;
+            text-align: center;
+            padding: 10px;
             color: #a6c48a;
-            font-weight: 700;
             text-decoration: none;
+            font-weight: 700;
         }
     </style>
 </head>
 <body>
-<div class="chat-card">
-    <h1>gemma3:4b</h1>
-    <div class="chat-box">
-
+<div class="chat-container">
+    <div class="chat-header">{{ selected_model }}</div>
+    <div class="chat-box" id="chatBox">
         {% if user_input %}
             <div class="message user-message">{{ user_input }}</div>
         {% endif %}
@@ -155,13 +179,32 @@
         {% if bot_reply %}
             <div class="message bot-message">{{ bot_reply | safe }}</div>
         {% endif %}
-
     </div>
-    <form method="POST">
-        <input type="text" name="user_input" placeholder="Type your message..." required>
+    <form method="POST" class="input-area">
+
+        <!-- Mascot -->
+        {% if bot_reply %}
+            <!-- When bot replied → show yuki_up -->
+            <img id="mascot" class="mascot-small mascot-look"
+                 src="/static/images/yuki_up.png" alt="Mascot">
+        {% else %}
+            <!-- When chat empty → show yuki_right -->
+            <img id="mascot" class="mascot-small"
+                 src="/static/images/yuki_right.png" alt="Mascot">
+        {% endif %}
+
+        <input type="text"
+               name="user_input"
+               placeholder="Ask anything..."
+               autocomplete="off"
+               required>
         <button type="submit">Send</button>
     </form>
-    <a href="/welcome" class="back-link">← Back</a>
 </div>
+<a href="/welcome" class="back-link">← Back</a>
+<script>
+    const chatBox = document.getElementById("chatBox");
+    chatBox.scrollTop = chatBox.scrollHeight;
+</script>
 </body>
 </html>
