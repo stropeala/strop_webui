@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local AI Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin: 0;
+        }
+
+        .chat-box {
+            margin-top: 20px;
+            border-top: 2px solid #ddd;
+            padding-top: 20px;
+        }
+
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 6px;
+        }
+
+        .user-message {
+            background-color: #e1f5fe;
+            text-align: right;
+        }
+
+        .bot-message {
+            background-color: #f1f1f1;
+        }
+
+        form {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0069d9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Chatbot</h1>
+        <div class="chat-box">
+            {% if user_input %}
+                <div class="message user-message">{{ user_input }}</div>
+                <div class="message bot-message">{{ bot_reply }}</div>
+            {% endif %}
+        </div>
+        <form method="POST">
+            <input
+                type="text"
+                name="user_input"
+                placeholder="Type your question..."
+                value="{{ user_input }}"
+                required
+            >
+            <button type="submit">Send</button>
+        </form>
+    </div>
+</body>
+</html>
