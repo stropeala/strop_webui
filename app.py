@@ -1,6 +1,9 @@
 #import the required libraries
 from flask import Flask, render_template, request, redirect, url_for
 import ollama
+import markdown
+from markupsafe import Markup
+
 app = Flask(__name__) #create a Flask app to handle the requests
 
 #defined the form for username and password
@@ -44,7 +47,9 @@ def ollama_response(user_input):
 
     #try to return the ai reply
     try:
-        return response.message.content #correct acces pattern
+        md_text = response.message.content
+        html_text = markdown.markdown(md_text, extensions=["fenced_code", "tables"])
+        return Markup(html_text) #correct acces pattern
     except AttributeError:
         return "Oops, something went wrong." #fallback if there is no .message or no .content
 
