@@ -1,153 +1,237 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
+<!DOCTYPE html> <!-- Declares the document type as HTML5 -->
+<html lang="en"> <!-- Root element of the page, specifying English language -->
+<head> <!-- Head section contains metadata, styles, scripts, and page settings -->
+
+    <meta charset="UTF-8"> <!-- Sets character encoding to UTF-8 (supports all characters) -->
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Strop-WebUI</title>
+    <!-- Ensures responsive scaling on mobile devices -->
+
+    <title>Strop-WebUI</title> <!-- Title shown in browser tab -->
+
     <style>
-        /* fonts */
+        /* ================================
+           FONT IMPORTS
+           ================================
+           @font-face allows you to load custom fonts
+           stored locally in your project's static folder.
+        */
+
         @font-face {
-            font-family: "JetBrains Mono";
-            src: url("/static/fonts/JetBrainsMono-2.304/webfonts/JetBrainsMono-Regular.woff2") format("woff2");
-            font-weight: 400;
+            font-family: "JetBrains Mono"; /* Name we'll use in CSS later */
+            src: url("/static/fonts/JetBrainsMono-2.304/webfonts/JetBrainsMono-Regular.woff2")
+                format("woff2"); /* Path to regular-weight font file */
+            font-weight: 400; /* Normal font weight */
         }
+
         @font-face {
-            font-family: "JetBrains Mono";
-            src: url("/static/fonts/JetBrainsMono-2.304/webfonts/JetBrainsMono-Bold.woff2") format("woff2");
-            font-weight: 700;
+            font-family: "JetBrains Mono"; /* Same font family */
+            src: url("/static/fonts/JetBrainsMono-2.304/webfonts/JetBrainsMono-Bold.woff2")
+                format("woff2"); /* Path to bold variant */
+            font-weight: 700; /* Bold weight */
         }
+
+        /* ================================
+           GLOBAL BODY STYLING
+           ================================
+           Sets the base colors, fonts, layout, and appearance.
+        */
 
         body {
-            background: #0d0d0f;
-            font-family: "JetBrains Mono", monospace;
-            color: #f2efe6;
-            margin: 0;
+            background: #0d0d0f; /* Dark background color */
+            font-family: "JetBrains Mono", monospace; /* Use custom font */
+            color: #f2efe6; /* Default text color (light beige) */
+            margin: 0; /* Remove default browser spacing */
             padding: 0;
 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: flex; /* Use flex layout */
+            flex-direction: column; /* Stack items vertically */
+            align-items: center; /* Center all content horizontally */
 
-            height: 100vh;
+            height: 100vh; /* Make body full viewport height */
         }
+
+        /* ================================
+           MAIN CHAT CONTAINER
+           ================================
+           The big rounded box that holds the entire interface.
+        */
 
         .chat-container {
-            width: 60%;
-            max-width: 900px;
-            height: 90vh;
-            margin-top: 30px;
+            width: 80%; /* Responsive width */
+            max-width: 1400px; /* Maximum width */
+            height: 90vh; /* Almost full-screen height */
+            margin-top: 30px; /* Space from the top */
 
-            background: #1c1c1f;
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.05);
+            background: #1c1c1f; /* Slightly lighter dark gray */
+            border-radius: 16px; /* Rounded corners */
+            border: 1px solid rgba(255,255,255,0.05); /* Subtle border */
 
             display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            flex-direction: column; /* Header → chat → input layout */
+            overflow: hidden; /* Prevent overflow */
 
-            box-shadow: 0 0 25px rgba(0,0,0,0.5);
+            box-shadow: 0 0 25px rgba(0,0,0,0.5); /* Outer shadow */
         }
+
+        /* ================================
+           HEADER SECTION
+           ================================
+           Shows the model dropdown and title.
+        */
 
         .chat-header {
-            padding: 20px;
-            text-align: center;
-            font-size: 22px;
-            font-weight: 700;
-            background: #121214;
-            border-bottom: 1px solid #2e2e31;
+            padding: 20px; /* Space inside header */
+            text-align: center; /* Center text */
+            font-size: 22px; /* Large title size */
+            font-weight: 700; /* Bold */
+            background: #121214; /* Dark background for contrast */
+            border-bottom: 1px solid #2e2e31; /* Divider line */
         }
+
+        .chat-header span {
+            color: #a6c48a; /* Green accent color */
+        }
+
+        /* ================================
+           CHAT MESSAGE AREA
+           ================================
+           Scrollable area containing all messages.
+        */
 
         .chat-box {
-            flex: 1;
-            padding: 25px;
-            overflow-y: auto;
+            flex: 1; /* Takes all remaining space */
+            padding: 25px; /* Inner spacing */
+            overflow-y: auto; /* Vertical scroll enabled */
         }
 
+        /* Custom scrollbar styling */
         .chat-box::-webkit-scrollbar { width: 10px; }
         .chat-box::-webkit-scrollbar-thumb {
-            background: #2e2e31;
-            border-radius: 5px;
+            background: #2e2e31; /* Scrollbar grab color */
+            border-radius: 5px; /* Rounded scrollbar */
         }
 
+        /* ================================
+           MESSAGE BUBBLE BASE STYLE
+           ================================
+           Shared styling for both user + bot messages.
+        */
+
         .message {
-            padding: 14px 18px;
-            margin: 10px 0;
-            border-radius: 12px;
-            max-width: 75%;
-            line-height: 1.55;
+            padding: 14px 18px; /* Inner spacing */
+            margin: 10px 0; /* Vertical spacing */
+            border-radius: 12px; /* Bubble shape */
+            max-width: 75%; /* Prevent overly wide messages */
+            line-height: 1.55; /* Improve text readability */
             font-size: 15px;
         }
 
+        /* USER MESSAGE STYLING
+           Aligns right, uses green background.
+        */
         .user-message {
-            background: #a6c48a;
-            color: #1c1c1f;
-            margin-left: auto;
-            border-radius: 12px 12px 0 12px;
-            font-weight: 700;
+            background: #a6c48a; /* Greenish background */
+            color: #1c1c1f; /* Dark text */
+            margin-left: auto; /* Push to right side */
+            border-radius: 12px 12px 0 12px; /* Slightly special shape */
+            font-weight: 700; /* Bold for readability */
+            white-space: pre-wrap; /* Preserve whitespace + wrap text */
         }
 
+        /* BOT MESSAGE STYLING
+           Dark background with border.
+        */
         .bot-message {
             background: #1f1f22;
-            border: 1px solid #2e2e31;
-            color: #f2efe6;
-            border-radius: 12px 12px 12px 0;
+            border: 1px solid #2e2e31; /* Slight border */
+            color: #f2efe6; /* Light text */
+            border-radius: 12px 12px 12px 0; /* Different bubble shape */
+            white-space: pre-wrap; /* Preserve newlines + wrap */
+        }
+
+        /* CODE BLOCK STYLING
+           Applies to markdown code inside messages.
+        */
+        .bot-message pre,
+        .user-message pre {
+            background: #0f0f10; /* Darker code background */
+            padding: 12px;
+            border-radius: 10px;
+            overflow-x: auto; /* Horizontal scroll for long code */
+            white-space: pre-wrap;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* For inline <code> blocks */
+        .bot-message code,
+        .user-message code {
+            white-space: pre-wrap;
+            word-break: break-word; /* Prevent long words overflow */
         }
 
         .bot-message a {
-            color: #a6c48a;
+            color: #a6c48a; /* Green links */
             font-weight: bold;
             text-decoration: none;
         }
+
         .bot-message a:hover {
-            color: #c4e3ab;
+            color: #c4e3ab; /* Brighter on hover */
         }
 
-        /* input area */
+        /* ================================
+           INPUT AREA (TEXTBOX + BUTTONS)
+           ================================
+        */
+
         .input-area {
-            display: flex;
-            align-items: center;
-            gap: 14px;
+            display: flex; /* Layout horizontally */
+            align-items: center; /* Vertically align elements */
+            gap: 14px; /* Space between elements */
             padding: 18px;
-            background: #121214;
-            border-top: 1px solid #2e2e31;
+
+            background: #121214; /* Dark strip at bottom */
+            border-top: 1px solid #2e2e31; /* Divider */
         }
 
-        /* mascot */
+        /* MASCOT IMAGE STYLING */
         .mascot-small {
-            width: 65px;
-            transition: transform 0.25s ease;
+            width: 65px; /* Mascot image size */
+            transition: transform 0.45s ease, opacity 0.3s ease;
+            /* Smooth animation for bounce */
         }
 
-        .mascot-look {
-            transform: translateY(-8px);
+        .mascot-bounce {
+            transform: translateY(-10px); /* Slight upward motion */
         }
 
-        input[type="text"] {
-            flex: 1;
+        /* TEXTAREA INPUT STYLING */
+        textarea {
+            flex: 1; /* Take remaining space */
             padding: 14px 18px;
             border-radius: 10px;
             border: 1px solid #2e2e31;
             background: #1c1c1f;
-
-            /* JetBrains Mono */
-            font-family: "JetBrains Mono", monospace !important;
+            font-family: "JetBrains Mono", monospace !important; /* Force font */
             font-weight: 700;
             font-size: 15px;
-            line-height: 1.4;
-            letter-spacing: 0.3px;
-
+            letter-spacing: 0.3px; /* Minor spacing tweak */
             color: #ffffff;
-            outline: none;
-
-            /* remove browser overrides */
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
+            resize: none; /* Prevent manual resizing */
+            overflow-y: hidden; /* Auto-resize handled by JS */
+            height: 50px; /* Starting height */
+            min-height: 0;
+            max-height: 250px; /* Limit max size */
+            outline: none; /* Remove blue outline */
+            appearance: none; /* Remove platform styling */
         }
 
+        /* BUTTON STYLING */
         button {
             padding: 14px 22px;
-            background: #a6c48a;
+            background: #a6c48a; /* Greenish buttons */
             border: none;
             border-radius: 10px;
             color: #1c1c1f;
@@ -156,9 +240,43 @@
         }
 
         button:hover {
-            background: #9ab983;
+            background: #9ab983; /* Slightly lighter on hover */
         }
 
+        /* ================================
+           SCROLL-TO-BOTTOM FLOATING BUTTON
+           Appears when user scrolls up.
+        ================================ */
+
+        #scrollBottomBtn {
+            position: fixed; /* Always stays visible */
+            left: 50%; /* Center horizontally */
+            transform: translateX(-50%) translateY(10px); /* Center & lower */
+            bottom: 250px; /* Vertical position */
+
+            background: #a6c48a;
+            color: #1c1c1f;
+            padding: 10px 14px;
+            border-radius: 50%; /* Circle button */
+            font-size: 20px;
+            cursor: pointer;
+
+            box-shadow: 0 0 10px rgba(0,0,0,0.35); /* Glow */
+            transition: opacity 0.25s ease, transform 0.25s ease;
+
+            opacity: 0; /* Hidden by default */
+            pointer-events: none; /* Cannot be clicked while hidden */
+
+            z-index: 999; /* Always on top */
+        }
+
+        #scrollBottomBtn.show {
+            opacity: 1; /* Make button visible */
+            transform: translateY(0); /* Reset Y offset */
+            pointer-events: auto; /* Enable clicking */
+        }
+
+        /* LINK BACK TO WELCOME PAGE */
         .back-link {
             text-align: center;
             padding: 10px;
@@ -166,45 +284,628 @@
             text-decoration: none;
             font-weight: 700;
         }
+
+        /* Fade-in animation for new messages */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 0.35s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
     </style>
+
+    <!-- Load local version of marked.js (Markdown parser) -->
+    <script src="/static/js/marked.min.js"></script>
+
 </head>
-<body>
+<body> <!-- Start of the visible webpage content -->
+
+<!-- =========================================
+     FLOATING SCROLL-TO-BOTTOM BUTTON
+     =========================================
+     This button shows up when the user scrolls
+     away from the latest message. Clicking it
+     scrolls back down.
+-->
+<div id="scrollBottomBtn">↓</div>
+
+<!-- =========================================
+     MAIN CHAT CONTAINER (Header + Messages + Input)
+     =========================================
+-->
 <div class="chat-container">
-    <div class="chat-header">{{ selected_model }}</div>
-    <div class="chat-box" id="chatBox">
-        {% if user_input %}
-            <div class="message user-message">{{ user_input }}</div>
-        {% endif %}
 
-        {% if bot_reply %}
-            <div class="message bot-message">{{ bot_reply | safe }}</div>
-        {% endif %}
+    <!-- ==========================
+         CHAT HEADER SECTION
+         Contains "Model:" label
+         + dropdown of available models
+         ==========================
+    -->
+    <div class="chat-header">
+        <div style="display:flex; justify-content:center; align-items:center; gap:10px;">
+            <!-- Label before dropdown -->
+            <span style="color:#a6c48a; font-weight:700;">Model:</span>
+
+            <!-- MODEL SELECT DROPDOWN
+                 Uses Jinja2 template variables: {{ m }}
+                 Backend supplies list "models"
+            -->
+            <select id="modelSelect" style="
+                background:#1c1c1f;
+                border:1px solid #2e2e31;
+                color:white;
+                padding:8px 12px;
+                border-radius:8px;
+                font-family:'JetBrains Mono';
+                font-size:14px;
+            ">
+                <!-- Loop through all models provided by backend -->
+                {% for m in models %}
+                    <option value="{{ m }}">{{ m }}</option>
+                {% endfor %}
+            </select>
+        </div>
     </div>
-    <form method="POST" class="input-area">
 
-        <!-- Mascot -->
-        {% if bot_reply %}
-            <!-- When bot replied → show yuki_up -->
-            <img id="mascot" class="mascot-small mascot-look"
-                 src="/static/images/yuki_up.png" alt="Mascot">
-        {% else %}
-            <!-- When chat empty → show yuki_right -->
-            <img id="mascot" class="mascot-small"
-                 src="/static/images/yuki_right.png" alt="Mascot">
-        {% endif %}
+    <!-- ==========================
+         CHAT BOX (MESSAGE AREA)
+         ==========================
+         This is where all user and bot messages appear.
+         It is scrollable.
+    -->
+    <div class="chat-box" id="chatBox"></div>
 
-        <input type="text"
-               name="user_input"
-               placeholder="Ask anything..."
-               autocomplete="off"
-               required>
+    <!-- ==========================
+         INPUT AREA
+         ==========================
+         Contains:
+         - mascot image
+         - textarea for user message
+         - Send button
+         - Stop button
+    -->
+    <form id="chatForm" class="input-area">
+
+        <!-- Mascot image (changes appearance when thinking/typing)
+             alt added (fix)
+        -->
+        <img id="mascot" class="mascot-small"
+             src="/static/images/yuki_right.png"
+             alt="Yuki mascot">
+
+        <!-- TEXTAREA FOR USER INPUT
+             ERROR FIXED: removed the "..." placeholder.
+             Should be a valid attribute list.
+        -->
+        <textarea id="userInput"
+                  placeholder="Type your message..."
+                  autocomplete="off"></textarea>
+
+        <!-- SUBMIT BUTTON (SENDS MESSAGE) -->
         <button type="submit">Send</button>
-    </form>
-</div>
+
+        <!-- STOP BUTTON (interrupts streaming)
+             Hidden by default.
+        -->
+        <button type="button" id="stopBtn" style="background:#ff6b6b; display:none;">
+            Stop
+        </button>
+
+    </form> <!-- End input-area form -->
+
+</div> <!-- End chat-container -->
+
+<!-- ==========================
+     BACK LINK (RETURN TO WELCOME PAGE)
+     ==========================
+-->
 <a href="/welcome" class="back-link">← Back</a>
+
+<!-- =========================================
+     JAVASCRIPT STARTS BELOW
+     =========================================
+     Everything after this controls:
+     - sending messages
+     - streaming response
+     - scrolling behavior
+     - auto-resize textarea
+     - mascot animations
+     - stop button
+-->
 <script>
+    /* ============================================
+       JAVASCRIPT SECTION — PART 1
+       ============================================
+       This section handles:
+
+       - Global variables
+       - Chat DOM references
+       - Auto-scroll logic
+       - Scroll-button behavior
+       - Mascot animations
+       - Adding messages to the chat
+       - Textarea auto-resize
+    */
+
+    let conversation = [];
+    // Array that stores full chat history (user + assistant messages)
+    // Sent back to the server with each request.
+
     const chatBox = document.getElementById("chatBox");
-    chatBox.scrollTop = chatBox.scrollHeight;
-</script>
-</body>
-</html>
+    // The container where messages are displayed.
+
+    const mascot = document.getElementById("mascot");
+    // The small mascot image that animates when thinking.
+
+    const userInput = document.getElementById("userInput");
+    // The textarea where the user types messages.
+
+    const chatForm = document.getElementById("chatForm");
+    // The <form> containing the input area.
+
+    let isStreaming = false;
+    // Tracks whether the chatbot is currently streaming a response.
+    // Prevents multiple simultaneous sends.
+
+
+    /* ============================================
+       AUTO-SCROLLING BEHAVIOR
+       ============================================
+       The UI autoscrolls to the bottom as long as
+       the user hasn't manually scrolled upwards.
+    */
+
+    let autoScrollEnabled = true;
+    // When true, UI scrolls to latest message.
+    // When false, UI stays where user scrolled.
+
+
+    /* Floating scroll button */
+    const scrollBtn = document.getElementById("scrollBottomBtn");
+    // This round button appears when user scrolls up.
+
+
+    /* SCROLL LISTENER FOR CHATBOX */
+    chatBox.addEventListener("scroll", () => {
+
+        // Detect if user is near the bottom:
+        const atBottom =
+            chatBox.scrollTop + chatBox.clientHeight >= chatBox.scrollHeight - 40;
+
+        if (atBottom) {
+            // User is at bottom: enable autoscroll.
+            autoScrollEnabled = true;
+            scrollBtn.classList.remove("show"); // Hide button
+        } else {
+            // User scrolled up: disable autoscroll.
+            autoScrollEnabled = false;
+            scrollBtn.classList.add("show"); // Show button
+        }
+    });
+
+
+    /* Manual scroll-to-bottom button click */
+    scrollBtn.addEventListener("click", () => {
+        autoScrollEnabled = true; // Re-enable autoscroll
+        scrollToBottom(); // Scroll instantly
+    });
+
+
+    /* FUNCTION: Scroll chat area to bottom */
+    function scrollToBottom() {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+
+    /* ============================================
+       STOP BUTTON LOGIC (ABORT STREAMING)
+       ============================================
+    */
+
+    let streamController = null;
+    // This AbortController will allow us to cancel fetch-stream requests.
+
+    const stopBtn = document.getElementById("stopBtn");
+    // Reference to the "Stop" button.
+
+
+    stopBtn.addEventListener("click", () => {
+        // If a stream is in progress, abort it:
+        if (streamController) {
+            streamController.abort();
+        }
+
+        stopBtn.style.display = "none"; // Hide stop button
+        isStreaming = false;            // Streaming mode off
+        setMascotIdle();                // Reset mascot animation
+    });
+
+
+    /* ============================================
+       MASCOT STATE FUNCTIONS
+       ============================================
+       These switch the mascot between idle and
+       thinking modes by swapping the image source
+       and toggling CSS animation classes.
+    */
+
+    function setMascotIdle() {
+        if (!mascot) return; // Safety
+
+        mascot.classList.remove("mascot-bounce");
+        // Remove bounce animation
+
+        mascot.src = "/static/images/yuki_right.png";
+        // Set mascot to idle image
+    }
+
+    function setMascotThinking() {
+        if (!mascot) return;
+
+        mascot.src = "/static/images/yuki_up.png";
+        // Switch to "thinking" image
+
+        mascot.classList.add("mascot-bounce");
+        // Add bounce animation
+    }
+
+
+    /* ============================================
+       FUNCTION: addMessage(content, sender)
+       ============================================
+       Adds a chat bubble to the chat.
+
+       sender = "user"  → user bubble
+       sender = "bot"   → bot bubble
+    */
+
+    function addMessage(content, sender) {
+
+        const msg = document.createElement("div");
+        // Create new <div> for message bubble.
+
+        msg.classList.add("message", "fade-in");
+        // Add base bubble class + animation.
+
+
+        if (sender === "user") {
+            msg.classList.add("user-message");
+            // Style as a right-aligned green user message.
+
+            msg.innerHTML = marked.parse(content);
+            // Parse markdown, enabling formatting.
+        } else {
+            msg.classList.add("bot-message");
+            // Style as left dark bot bubble.
+
+            msg.textContent = content;
+            // Raw text when first inserted (placeholder or initial stream)
+        }
+
+
+        chatBox.appendChild(msg);
+        // Insert the bubble into the chat UI.
+
+
+        if (autoScrollEnabled)
+            scrollToBottom();
+        // Scroll if allowed.
+
+
+        return msg;
+        // Return the DOM element so streaming can update it.
+    }
+
+
+    /* ============================================
+       TEXTAREA AUTO-RESIZE LOGIC
+       ============================================
+       Expands the input box based on text length.
+    */
+
+    let singleLineHeight = 50; // Starting height
+    const maxHeight = 250;     // Maximum growth allowed
+
+
+    function initTextareaHeight() {
+        if (!userInput) return;
+
+        const prevValue = userInput.value; // Save original value
+
+        userInput.value = "";             // Clear
+        userInput.style.height = "auto";  // Reset height
+
+        userInput.value = "X";            // Temporary single character
+        userInput.style.height = "auto";
+
+        singleLineHeight = userInput.scrollHeight;
+        // Stores height of 1 line of text.
+
+        userInput.value = prevValue; // Restore text
+        userInput.style.height = singleLineHeight + "px";
+        // Apply correct height
+    }
+
+
+    if (userInput) {
+
+        initTextareaHeight();
+        // Compute height of a single text row.
+
+
+        /* Resize textarea dynamically */
+        userInput.addEventListener("input", () => {
+
+            userInput.style.height = "auto";
+            // Reset before recalculating
+
+            const scrollH = userInput.scrollHeight;
+            // Height needed for current content
+
+            const targetHeight = Math.min(
+                Math.max(scrollH, singleLineHeight),
+                maxHeight
+            );
+            // Ensure height is between min + max limits.
+
+
+            userInput.style.height = targetHeight + "px";
+            // Apply height update.
+
+            setMascotIdle();
+            // Whenever user types, stop the mascot from thinking.
+        });
+
+
+        /* When user focuses input box, reset mascot to idle */
+        userInput.addEventListener("focus", () => {
+            setMascotIdle();
+        });
+
+
+        /* Handle Enter key behavior */
+        userInput.addEventListener("keydown", function (e) {
+
+            if (e.key === "Enter") {
+
+                if (e.shiftKey)
+                    return; // Allow Shift+Enter to create newline.
+
+                e.preventDefault(); // Prevent default newline behavior.
+                chatForm.requestSubmit(); // Programmatically submit form.
+            }
+        });
+    }
+    /* ============================================
+       STREAMING CHAT LOGIC
+       ============================================
+       This manages:
+
+       - Sending the user message to the server
+       - Receiving streamed chunks of response text
+       - Rendering as it arrives (like ChatGPT)
+       - Allowing the Stop button to interrupt it
+    */
+
+    if (chatForm) { // Ensure the form exists before adding listener
+
+        chatForm.addEventListener("submit", async (e) => {
+            e.preventDefault(); // Prevent form refresh
+            if (isStreaming) return; // Avoid double-sending
+
+            const text = userInput.value.trim();
+            // Get trimmed text from user input
+
+            if (!text) return; // Ignore empty messages
+
+
+            /* ============================================
+               DISPLAY USER MESSAGE
+               ============================================
+            */
+            addMessage(text, "user");
+            // Insert into UI immediately
+
+            conversation.push({ role: "user", content: text });
+            // Store in conversation history
+
+
+            /* Reset user input box */
+            userInput.value = "";
+            userInput.style.height = singleLineHeight + "px";
+
+
+            /* ============================================
+               CREATE BOT MESSAGE PLACEHOLDER
+               ============================================
+            */
+            const botMsgEl = addMessage("Yuki is thinking...", "bot");
+            // Placeholder text shown while waiting for first chunk
+
+            setMascotThinking();
+            // Mascot switches to thinking mode
+
+
+            /* Determine selected model from dropdown */
+            const model = document.getElementById("modelSelect").value;
+
+
+            /* Create AbortController for stopping stream */
+            streamController = new AbortController();
+
+            /* Show Stop button */
+            stopBtn.style.display = "block";
+
+            /* Mark streaming as active */
+            isStreaming = true;
+
+
+            /* ============================================
+               SEND FETCH REQUEST FOR STREAMING RESPONSE
+               ============================================
+               POST /api/stream-chat
+               Body: {message, model, history}
+            */
+
+            try {
+
+                const response = await fetch("/api/stream-chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: text,
+                        model: model,
+                        history: conversation // full history
+                    }),
+                    signal: streamController.signal // allows abort
+                });
+
+                // Ensure server responded properly
+                if (!response.ok || !response.body) {
+                    botMsgEl.textContent = "Error: failed to get response.";
+                    return;
+                }
+
+
+                /* ============================================
+                   SETUP STREAM READERS
+                   ============================================
+                   `response.body.getReader()` returns a stream reader.
+                */
+
+                const reader = response.body.getReader();
+                // Reader allows reading chunk by chunk
+
+                const decoder = new TextDecoder("utf-8");
+                // Converts Uint8Array → string
+
+
+                let botText = "";        // Full reply buffer
+                let isFirstChunk = true; // True until first data arrives
+                let renderCooldown = false; // Limit render frequency
+
+
+                /* ============================================
+                   READ STREAM LOOP
+                   ============================================
+                   Continuously read chunks until done.
+                */
+
+                while (true) {
+
+                    const { value, done } = await reader.read();
+                    // value = chunk of bytes
+                    // done = true when stream ends
+
+                    if (done) break; // exit loop when server ends stream
+
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    // Convert bytes → text
+
+                    if (!chunk) continue; // Skip empty chunks
+
+
+                    if (isFirstChunk) {
+                        // Remove placeholder text when first data arrives
+                        botMsgEl.innerHTML = "";
+                        isFirstChunk = false;
+                    }
+
+                    botText += chunk; // Append chunk to main buffer
+
+
+                    /* ============================================
+                       RENDERING THROTTLE
+                       ============================================
+                       To avoid rendering hundreds of times per second,
+                       update only every 40ms.
+                    */
+                    if (!renderCooldown) {
+
+                        renderCooldown = true;
+
+                        botMsgEl.innerHTML =
+                            marked.parse(botText) +
+                            '<span class="stream-cursor"></span>';
+                        // Append flashing cursor to simulate typing
+
+                        if (autoScrollEnabled)
+                            scrollToBottom(); // Keep bottom locked
+
+
+                        setTimeout(() => {
+                            renderCooldown = false;
+                        }, 40);
+                    }
+                }
+
+
+                /* ============================================
+                   STREAM COMPLETE — FINAL RENDER
+                   ============================================
+                */
+
+                if (botText.trim().length > 0) {
+                    botMsgEl.innerHTML = marked.parse(botText);
+                    // Final pretty markdown render
+                } else {
+                    botMsgEl.textContent = "…"; // If nothing was streamed
+                }
+
+                if (autoScrollEnabled)
+                    scrollToBottom(); // Scroll final output
+
+
+                /* Store assistant message in history */
+                conversation.push({
+                    role: "assistant",
+                    content: botText
+                });
+
+
+            /* ============================================
+               ERROR HANDLING
+               ============================================
+            */
+            } catch (err) {
+
+                if (err.name === "AbortError") {
+                    // User clicked STOP
+                    botMsgEl.textContent = "Response stopped.";
+                } else {
+                    botMsgEl.textContent = "Error: " + err.message;
+                    // Unexpected error
+                }
+
+            } finally {
+
+                /* Always cleanup */
+                isStreaming = false; // Allow next send
+                stopBtn.style.display = "none"; // Hide stop button
+
+                /* Delay mascot going idle for smoother effect */
+                setTimeout(() => setMascotIdle(), 400);
+            }
+
+        }); // end form submit listener
+    } // end if(chatForm)
+
+
+    /* ============================================
+       INITIAL AUTO-SCROLL TO BOTTOM
+       ============================================
+    */
+    if (autoScrollEnabled)
+        scrollToBottom();
+
+</script> <!-- End of all JS -->
+
+</body> <!-- End of page body -->
+</html> <!-- End of HTML document -->
