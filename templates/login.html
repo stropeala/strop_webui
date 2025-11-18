@@ -1,78 +1,96 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html> <!-- Declares the document type and HTML version -->
+<html lang="en"> <!-- Sets the language to English -->
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <meta charset="UTF-8"> <!-- Ensures proper character encoding -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Mobile responsiveness -->
+    <title>Login</title> <!-- Browser tab title -->
 
     <style>
-        /* local font */
+        /* -----------------------------------------------------------
+           FONT IMPORTS
+           Loads JetBrains Mono from local files so the UI
+           always uses your preferred terminal-style font.
+        ----------------------------------------------------------- */
         @font-face {
-            font-family: "JetBrains Mono";
-            src: url("/static/fonts/JetBrainsMono-2.304/webfonts/JetBrainsMono-Regular.woff2") format("woff2");
+            font-family: "JetBrains Mono"; /* Name used in CSS */
+            src: url("/static/fonts/JetBrainsMono-2.304/webfonts/JetBrainsMono-Regular.woff2") format("woff2"); /* Regular weight */
             font-weight: 400;
             font-style: normal;
         }
 
         @font-face {
             font-family: "JetBrains Mono";
-            src: url("/static/fonts/JetBrainsMono-2.304/webfonts/JetBrainsMono-Bold.woff2") format("woff2");
+            src: url("/static/fonts/JetBrainsMono-2.304/webfonts/JetBrainsMono-Bold.woff2") format("woff2"); /* Bold weight */
             font-weight: 700;
             font-style: normal;
         }
 
+        /* -----------------------------------------------------------
+           BODY STYLING
+           Centers the login card on screen and applies colors.
+        ----------------------------------------------------------- */
         body {
-            margin: 0;
-            padding: 0;
-            background: #0d0d0f; /* charcoal */
-            font-family: "JetBrains Mono", monospace;
-            color: #f2efe6; /* off-white */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            margin: 0; /* Remove default margins */
+            padding: 0; /* Remove default padding */
+            background: #0d0d0f; /* Charcoal background */
+            font-family: "JetBrains Mono", monospace; /* Terminal-like font */
+            color: #f2efe6; /* Off-white text */
+            display: flex; /* Flexbox layout */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            height: 100vh; /* Full viewport height */
         }
 
+        /* -----------------------------------------------------------
+           LOGIN CARD
+           Styled container that holds the form.
+        ----------------------------------------------------------- */
         .login-card {
-            background: #1c1c1f; /* dark grey */
-            width: 380px;
-            padding: 40px;
-            border-radius: 14px;
-            box-shadow: 0 0 25px rgba(0,0,0,0.55);
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.04);
-            position: relative;
+            background: #1c1c1f; /* Dark grey */
+            width: 380px; /* Fixed card width */
+            padding: 40px; /* Inner spacing */
+            border-radius: 14px; /* Rounded corners */
+            box-shadow: 0 0 25px rgba(0,0,0,0.55); /* Soft glow */
+            text-align: center; /* Center text */
+            border: 1px solid rgba(255,255,255,0.04); /* Subtle border */
+            position: relative; /* For precise internal positioning */
         }
 
-        /* wrap mascot + bubble */
+        /* -----------------------------------------------------------
+           MASCOT WRAPPER
+           Contains mascot image and speech bubble.
+        ----------------------------------------------------------- */
         .mascot-wrapper {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 16px; /* space below mascot */
+            position: relative; /* Allows bubble to position above */
+            display: inline-block; /* Wrap size around content */
+            margin-bottom: 16px; /* Space below mascot */
         }
 
-        /* angry ascot */
+        /* -----------------------------------------------------------
+           MASCOT IMAGES
+           Normal and angry versions share same rules.
+        ----------------------------------------------------------- */
         .mascot,
         .mascot-angry {
-            width: 150px;
-            height: auto;
-            /* no white flash */
-            opacity: 0;
-            transition: opacity 0.25s ease-in;
-            display: block;
+            width: 150px; /* Image width */
+            height: auto; /* Preserve ratio */
+            opacity: 0; /* Start invisible (fade-in later) */
+            transition: opacity 0.25s ease-in; /* Fade animation */
+            display: block; /* Removes inline spacing issues */
         }
 
-        /* fade in */
+        /* Fade in once the .loaded class is added in JavaScript */
         .mascot.loaded,
         .mascot-angry.loaded {
             opacity: 1;
         }
 
-        /* shake animation */
+        /* Angry version shakes after loading */
         .mascot-angry.loaded {
-            animation: shake 0.4s ease-in-out 0.25s;
+            animation: shake 0.4s ease-in-out 0.25s; /* Shake after fade */
         }
 
+        /* Simple left-right shake keyframes */
         @keyframes shake {
             0% { transform: translateX(0); }
             20% { transform: translateX(-6px); }
@@ -82,51 +100,55 @@
             100% { transform: translateX(0); }
         }
 
-        /* speech bubble */
+        /* -----------------------------------------------------------
+           SPEECH BUBBLE (shown on error only)
+        ----------------------------------------------------------- */
         .speech-bubble {
-            background: #a6c48a;
-            color: #1c1c1f;
+            background: #a6c48a; /* Green color */
+            color: #1c1c1f; /* Dark text */
             font-weight: 700;
             padding: 8px 14px;
-            border-radius: 8px;
+            border-radius: 8px; /* Rounded bubble */
             display: inline-block;
             font-size: 13px;
             position: absolute;
-            left: 50%;
-            bottom: 100%;
-            transform: translateX(-50%) translateY(-8px);
-            opacity: 0;
+            left: 50%; /* Center horizontally */
+            bottom: 100%; /* Position above mascot */
+            transform: translateX(-50%) translateY(-8px); /* Exact placement */
+            opacity: 0; /* Fade in later */
             transition: opacity 0.25s ease-in;
-            white-space: nowrap;
+            white-space: nowrap; /* Prevents text wrapping */
         }
 
-        /* bubble fades in */
+        /* Fade in bubble */
         .speech-bubble.loaded {
             opacity: 1;
         }
 
+        /* Bubble tail/triangle */
         .speech-bubble::after {
             content: "";
             position: absolute;
-            top: 100%;
+            top: 100%; /* Below bubble */
             left: 50%;
             transform: translateX(-50%);
-            width: 0;
-            height: 0;
             border-left: 8px solid transparent;
             border-right: 8px solid transparent;
-            border-top: 8px solid #a6c48a; /* little triangle pointing down */
+            border-top: 8px solid #a6c48a; /* Triangle color */
         }
 
-        /* white title */
+        /* -----------------------------------------------------------
+           TITLE STYLING
+        ----------------------------------------------------------- */
         h2 {
             margin-top: 10px;
             margin-bottom: 20px;
             font-size: 26px;
             font-weight: 700;
-            color: #ffffff;
+            color: #ffffff; /* Pure white */
         }
 
+        /* Label styling */
         label {
             display: block;
             margin: 12px 0 6px;
@@ -135,84 +157,105 @@
             color: #e0ded8;
         }
 
+        /* Input fields */
         input {
-            width: 100%;
+            width: 100%; /* Full card width */
             padding: 12px;
             border-radius: 8px;
-            border: 1px solid #2e2e31;
+            border: 1px solid #2e2e31; /* Subtle border */
             outline: none;
             font-size: 16px;
-            font-family: "JetBrains Mono", monospace; /* terminal-style */
-            font-weight: 700; /* bold-terminal-style */
-            background: #121214;
+            font-family: "JetBrains Mono", monospace;
+            font-weight: 700; /* Bold terminal look */
+            background: #121214; /* Dark input */
             color: #ffffff;
-            transition: 0.2s;
+            transition: 0.2s; /* Smooth focus border */
         }
 
-        /* green border */
+        /* Green highlight when focused */
         input:focus {
             border-color: #a6c48a;
             box-shadow: 0 0 0 2px rgba(166, 196, 138, 0.35);
         }
 
-        /* green button */
+        /* Login button styling */
         button {
             margin-top: 20px;
             width: 100%;
             padding: 12px;
-            background: #a6c48a;
+            background: #a6c48a; /* Green */
             border: none;
             border-radius: 8px;
-            color: #1c1c1f;
+            color: #1c1c1f; /* Dark text */
             font-weight: 700;
             font-size: 16px;
-            cursor: pointer;
+            cursor: pointer; /* Hover pointer */
             transition: 0.25s;
         }
 
+        /* Slightly darker hover */
         button:hover {
             background: #9ab983;
         }
 
+        /* Error message box */
         .error {
-            color: #ff6b6b;
-            background: rgba(255, 50, 50, 0.1);
+            color: #ff6b6b; /* Red text */
+            background: rgba(255, 50, 50, 0.1); /* Light red bg */
             padding: 10px;
             margin: 15px 0;
             border-radius: 8px;
         }
+
     </style>
 </head>
+
 <body>
-    <div class="login-card">
-        <div class="mascot-wrapper">
-            {% if error %}
-                <img class="mascot-angry" src="/static/images/yuki_angry.png" alt="Angry Mascot">
-                <div class="speech-bubble">HEY!<br>That's wrong!</div>
-            {% else %}
-                <img class="mascot" src="/static/images/yuki.png" alt="Cat Mascot">
+    <div class="login-card"> <!-- Main container -->
+
+        <div class="mascot-wrapper"> <!-- Holds mascot + bubble -->
+
+            {% if error %} <!-- Server-side condition: error mode -->
+                <img class="mascot-angry" src="/static/images/yuki_angry.png" alt="Angry Mascot"> <!-- Angry mascot -->
+                <div class="speech-bubble">HEY!<br>That's wrong!</div> <!-- Bubble appears on error -->
+
+            {% else %} <!-- Normal mode -->
+                <img class="mascot" src="/static/images/yuki.png" alt="Cat Mascot"> <!-- Happy mascot -->
             {% endif %}
         </div>
-        <h2>Strop-WebUI</h2>
-        {% if error %}
+
+        <h2>Strop-WebUI</h2> <!-- Title -->
+
+        {% if error %} <!-- Show error box if login failed -->
             <div class="error">Invalid username or password</div>
         {% endif %}
+
+        <!-- -------------------------------------------------------
+             LOGIN FORM
+             Submits username + password POST request.
+        ------------------------------------------------------- -->
         <form method="POST">
-            <label for="username">Username</label>
-            <input type="text" id="username" name="username" required>
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" required>
-            <button type="submit">Login</button>
+            <label for="username">Username</label> <!-- Username label -->
+            <input type="text" id="username" name="username" required> <!-- Username input -->
+
+            <label for="password">Password</label> <!-- Password label -->
+            <input type="password" id="password" name="password" required> <!-- Password input -->
+
+            <button type="submit">Login</button> <!-- Submit button -->
         </form>
     </div>
 
-    <!-- animation trigger -->
+    <!-- -----------------------------------------------------------
+         JAVASCRIPT
+         Adds "loaded" class to trigger fade-in animations.
+    ----------------------------------------------------------- -->
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const mascots = document.querySelectorAll(".mascot, .mascot-angry");
-            const bubbles = document.querySelectorAll(".speech-bubble");
-            mascots.forEach(m => m.classList.add("loaded"));
-            bubbles.forEach(b => b.classList.add("loaded"));
+        document.addEventListener("DOMContentLoaded", () => { /* Run after page loads */
+            const mascots = document.querySelectorAll(".mascot, .mascot-angry"); /* Select both mascot types */
+            const bubbles = document.querySelectorAll(".speech-bubble"); /* Select bubble(s) */
+
+            mascots.forEach(m => m.classList.add("loaded")); /* Trigger fade-in */
+            bubbles.forEach(b => b.classList.add("loaded")); /* Trigger bubble fade */
         });
     </script>
 
