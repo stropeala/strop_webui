@@ -1,16 +1,14 @@
-#import the required libraries
-from flask import Flask, render_template, request, redirect, url_for
+#import the required libraries(for routing, templates, forms, streaming and ollama)
+from flask import Flask, render_template, request, redirect, url_for, Response, stream_with_context
 import ollama
-import markdown
-from markupsafe import Markup
 
-app = Flask(__name__) #create a Flask app to handle the requests
+app = Flask(__name__) #create a flask app to handle the requests
 
-#defined the form for username and password
+#defined the form for username and password (not secure for public use yet)
 USERNAME = "admin"
 PASSWORD = "admin"
 
-#LOGIN PAGE
+#LOGIN ROUTE
 @app.route("/", methods=["GET", "POST"]) #creating the main route for the login
 def login():
     if request.method == 'POST': #when the form is submitted
@@ -25,34 +23,36 @@ def login():
                                    error="Invalid username or password") #if credentials are incorrect return to log in
     return render_template("login.html") #if the request is GET(just opening the page) show login page
 
+#WELCOME PAGE ROUTE
 @app.route("/welcome") #creating the main route for the welcome page
 def welcome():
     return render_template("welcome.html") #show welcome page
 
-@app.route("/chat", methods=["GET", "POST"]) #creating the main route for the chat page
+#CHAT PAGE ROUTE FOR THE LIST OF MODELS
+@app.route("/chat", methods=["GET"]) #creating the main route for the chat page and model list
 def chat():
-    user_input = "" #empty user input so page loads without errors
-    bot_reply = "" #empty bot reply for the same reason
+    models = ollama.list()["models"] #get all installed ollama models
+    model_names = [m.model for m in models] #extract model names
+    return render_template("chat.html", models=model_names) #show chat page and forward list of model names to html template
 
-    if request.method == "POST": #if user submits a mesage
-        user_input = request.form["user_input"] #get user input from this form
-        bot_reply = ollama_response(user_input) #sen it to ollama model to get a reply
-    #render the chat page and sens these parameters to html
-    return render_template("chat.html", user_input=user_input, bot_reply=bot_reply)
+#STREAMING CHAT API ROUTE AND BACKEND
+@app.route("/api/stream-chat", methods=["POST"]) #api endpoint for streaming chat
+def api_stream_chat(): #function that handles streamed model response
+    data = request.get_json() #reads the json payload from request
+    user_message = data.get("message", "") #get user message
+    model = data.get("model", "gemma3:4b") #get model name or use default
+    history = data.get("history", []) #extract previous chat history
+    messages = history + [{"role": "user", "content": user_message}] #builds a full convo including the new user messages
 
-def ollama_response(user_input):
-    #send the user input to ollama model
-    response = ollama.chat(model="gemma3:4b", messages=[{"role": "user", "content": user_input}])
-    print(response) #print the response
+    def generate(): #generates function for streaming model tokens
+            stream = ollama.chat(model=model, messages=messages, stream=True) #calls ollama in streaming mode
+            for chunk in stream: #iterates over streamed chunks
+                if "message" in chunk: #makes sure chunk contains message content
+                    token = chunk["message"].get("content", "") #extracts token text
+                    if token: #if the text exists
+                        yield token #send it imediately to the user
+    return Response(stream_with_context(generate()), mimetype="text/plain") #returns streamed text response with correct mime type
 
-    #try to return the ai reply
-    try:
-        md_text = response.message.content
-        html_text = markdown.markdown(md_text, extensions=["fenced_code", "tables"])
-        return Markup(html_text) #correct acces pattern
-    except AttributeError:
-        return "Oops, something went wrong." #fallback if there is no .message or no .content
-
-#Activating the server
+#activating the server
 if __name__ == "__main__": #run the app only when this file is executed
     app.run(debug=True) #enable the debug mode
