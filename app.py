@@ -1,58 +1,134 @@
-#import the required libraries(for routing, templates, forms, streaming and ollama)
-from flask import Flask, render_template, request, redirect, url_for, Response, stream_with_context
+from flask import (
+    Flask,
+    render_template,
+    request,
+    redirect,
+    url_for,
+    Response,
+    stream_with_context
+)
 import ollama
 
-app = Flask(__name__) #create a flask app to handle the requests
 
-#defined the form for username and password (not secure for public use yet)
+app = Flask(__name__)
+
+
+# Placeholder credentials
 USERNAME = "admin"
 PASSWORD = "admin"
 
-#LOGIN ROUTE
-@app.route("/", methods=["GET", "POST"]) #creating the main route for the login
+
+#------------------- FUNCTIONS --------------------#
+
+
+# Asks Ollama for all installed models
+# Returns a list of model names
+def get_installed_models():
+
+    model_info = ollama.list().get("models", [])
+    return [model.model for model in model_info]
+
+
+# Adds the latest user message to the conversation memory
+# The memory is managed by the app, not the model
+# This returns a new list to the model every time
+def add_to_conversation_memory(conversation_memory, user_message):
+
+    new_entry = {"role": "user", "content": user_message}
+    return conversation_memory + [new_entry]
+
+
+# Calls the Ollama model in streaming mode
+# The model sends back the response in tiny pieces
+# This yields each piece immediately so the browser can display it live
+def stream_model_reply(model_name, conversation_memory):
+
+    stream = ollama.chat(
+        model = model_name,
+        messages = conversation_memory, # Gives the model the full conversation
+        stream = True,
+    )
+
+    for chunk in stream:
+        message = chunk.get("message", {})
+        token = message.get("content", "")
+
+        if token:
+            yield token
+
+
+#------------------- LOGIN PAGE (/) --------------------#
+
+
+@app.route("/", methods = ["GET", "POST"])
 def login():
-    if request.method == 'POST': #when the form is submitted
-        username = request.form.get("username") #get username from form
-        password = request.form.get("password") #get password from form
 
-        #checking if credentials are correct
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+
         if username == USERNAME and password == PASSWORD:
-            return redirect(url_for("welcome")) #if the credentials are correct direct to welcome page
-        else:
-            return render_template("login.html",
-                                   error="Invalid username or password") #if credentials are incorrect return to log in
-    return render_template("login.html") #if the request is GET(just opening the page) show login page
+            return redirect(url_for("welcome"))
 
-#WELCOME PAGE ROUTE
-@app.route("/welcome") #creating the main route for the welcome page
+        return render_template(
+            "login.html",
+            error = "Invalid username or password."
+        )
+
+    return render_template("login.html")
+
+
+#------------------- WELCOME PAGE (/welcome) --------------------#
+
+
+@app.route("/welcome")
 def welcome():
-    return render_template("welcome.html") #show welcome page
 
-#CHAT PAGE ROUTE FOR THE LIST OF MODELS
-@app.route("/chat", methods=["GET"]) #creating the main route for the chat page and model list
+    return render_template("welcome.html")
+
+
+#------------------- CHAT PAGE (/chat) --------------------#
+
+
+@app.route("/chat", methods = ["GET"])
 def chat():
-    models = ollama.list()["models"] #get all installed ollama models
-    model_names = [m.model for m in models] #extract model names
-    return render_template("chat.html", models=model_names) #show chat page and forward list of model names to html template
 
-#STREAMING CHAT API ROUTE AND BACKEND
-@app.route("/api/stream-chat", methods=["POST"]) #api endpoint for streaming chat
-def api_stream_chat(): #function that handles streamed model response
-    data = request.get_json() #reads the json payload from request
-    user_message = data.get("message", "") #get user message
-    model = data.get("model", "gemma3:4b") #get model name or use default
-    history = data.get("history", []) #extract previous chat history
-    messages = history + [{"role": "user", "content": user_message}] #builds a full convo including the new user messages
+    models = get_installed_models()
 
-    def generate(): #generates function for streaming model tokens
-            stream = ollama.chat(model=model, messages=messages, stream=True) #calls ollama in streaming mode
-            for chunk in stream: #iterates over streamed chunks
-                if "message" in chunk: #makes sure chunk contains message content
-                    token = chunk["message"].get("content", "") #extracts token text
-                    if token: #if the text exists
-                        yield token #send it imediately to the user
-    return Response(stream_with_context(generate()), mimetype="text/plain") #returns streamed text response with correct mime type
+    return render_template(
+        "chat.html",
+        models = models
+    )
 
-#activating the server
-if __name__ == "__main__": #run the app only when this file is executed
-    app.run(debug=True) #enable the debug mode
+
+#------------------- STREAMING CHAT API (/api/stream-chat) --------------------#
+
+
+@app.route("/api/stream-chat", methods=["POST"])
+def streaming_chat_api():
+
+    # Reads json sent from browser
+    data = request.get_json()
+
+    # Extracts parts of the request
+    user_message = data.get("message", "")
+    model_name = data.get("model", "")
+    conversation_memory = data.get("memory", []) # Previous "memory"
+
+    # Adds the latest message to "memory"
+    conversation_memory = add_to_conversation_memory(conversation_memory, user_message)
+
+    # Streams the model's response back to the browser
+    return Response(
+        stream_with_context(
+            stream_model_reply( model_name, conversation_memory )
+        ),
+        mimetype="text/plain",
+    )
+
+
+#------------------- START SERVER --------------------#
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
