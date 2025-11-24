@@ -122,7 +122,7 @@ def streaming_chat_api():
         stream_with_context(
             stream_model_reply( model_name, conversation_memory )
         ),
-        mimetype="text/plain",
+        mimetype = "text/plain",
     )
 
 
