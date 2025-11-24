@@ -2,7 +2,8 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
-
+from dotenv import load_dotenv
+load_dotenv()
 
 # Initialize SQLAlchemy instance
 db = SQLAlchemy()
@@ -10,7 +11,7 @@ db = SQLAlchemy()
 
 def create_app():
     # Path to instance folder *inside* package
-    instance_path = os.path.join(os.path.dirname(__file__), "instance")
+    instance_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "instance"))
 
     # Ensure instance exists
     os.makedirs(instance_path, exist_ok=True)
@@ -24,8 +25,8 @@ def create_app():
     )
 
     # Configuration
-    app.config['SECRET_KEY'] = 'super-secret-key-69-420'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-69-420')
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # Initialize extensions with app
