@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Sign Up • Strop-WebUI{% endblock %}
+
+{% block styles %}
+.signup-wrapper {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+.signup-card {
+    width: 420px;
+}
+    .signup-card form {
+    text-align: left;
+}
+.mascot {
+    width:150px;
+    opacity:0;
+    transition:opacity 0.25s ease-in;
+    display:block;
+    margin:0 auto;
+}
+.mascot.loaded { opacity:1; }
+label { margin:12px 0 6px; display:block; color:#e0ded8; }
+input {
+    width:100%; padding:12px; border-radius:8px;
+    border:1px solid #2e2e31; background:#121214;
+    color:#fff; font-size:16px; font-weight:700;
+}
+button {
+    margin-top:20px; width:100%; padding:12px;
+    background:#a6c48a; color:#1c1c1f;
+    border:none; border-radius:8px; font-weight:700;
+}
+button:hover { background:#9ab983; }
+.already { margin-top:18px; color:#d5d3cd; }
+.already a { color:#a6c48a; font-weight:700; }
+{% endblock %}
+
+{% block content %}
+<div class="signup-wrapper">
+    <div class="card signup-card">
+        <img class="mascot" src="/static/images/yuki_down.png">
+
+        <h2>Create Your Account</h2>
+
+        <form method="POST">
+            <label>Name</label>
+            <input name="name" type="text" required>
+
+            <label>Email</label>
+            <input name="email" type="email" required>
+
+            <label>Password</label>
+            <input name="password" type="password" required>
+
+            <button type="submit">Sign Up</button>
+        </form>
+
+        <div class="already">
+            Already have an account?
+            <a href="/login">Log in!</a>
+            <br>
+            <a href="/">Welcome Page</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelector(".mascot").classList.add("loaded");
+});
+</script>
+{% endblock %}

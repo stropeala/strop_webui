@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Strop-WebUI{% endblock %}</title>
+
+    <style>
+        /* ===== Fonts ===== */
+        @font-face {
+            font-family: "JetBrains Mono";
+            src: url("/static/fonts/JetBrainsMono-2.304/webfonts/JetBrainsMono-Regular.woff2") format("woff2");
+        }
+        @font-face {
+            font-family: "JetBrains Mono";
+            src: url("/static/fonts/JetBrainsMono-2.304/webfonts/JetBrainsMono-Bold.woff2") format("woff2");
+            font-weight: 700;
+        }
+
+        /* ===== Global Theme ===== */
+        body {
+            margin: 0;
+            padding-top: 60px;
+            background: #0d0d0f;
+            font-family: "JetBrains Mono", monospace;
+            color: #f2efe6;
+
+            overflow-y: hidden;
+            scrollbar-width: none;
+        }
+        body::-webkit-scrollbar { display: none; }
+
+        a { text-decoration: none; color: inherit; }
+
+        /* ===== Navbar ===== */
+        .top-nav {
+            width: 100%;
+            height: 58px;
+            background: #0f0f11;
+            border-bottom: 1px solid #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 18px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 2000;
+            box-sizing: border-box;
+        }
+
+        .logo-text {
+            color: #a6c48a;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        /* ===== RIGHT MENU ===== */
+        .right-menu {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+
+            /* === ADDED FIX === */
+            height: 58px;
+        }
+
+        /* ===== Profile Button ===== */
+        .profile-btn {
+            padding: 8px 14px;
+            background: #1d1d22;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px;
+            font-weight: 700;
+            color: #f2efe6;
+            transition: 0.18s ease;
+        }
+        .profile-btn:hover {
+            background: #24242a;
+            border-color: rgba(166,196,138,0.6);
+            color: #a6c48a;
+        }
+
+        /* ===== Launcher Button ===== */
+        .launcher-wrap {
+            position: relative;
+
+            /* === ADDED FIX === */
+            align-self: center !important;
+        }
+
+        .launcher-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.06);
+            background: #151518;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+
+            /* === ADDED FIX === */
+            line-height: 1 !important;
+            font-size: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            vertical-align: middle !important;
+        }
+
+        .launcher-btn:hover {
+            border-color: rgba(166,196,138,0.8);
+            box-shadow: 0 0 0 2px rgba(166,196,138,0.18);
+        }
+
+        .launcher-btn img {
+            width: 20px;
+            height: 20px;
+            display: block;
+            pointer-events: none;
+        }
+
+        /* ===== App Launcher Panel ===== */
+        .app-panel {
+            position: absolute;
+            top: 48px;
+            right: 0;
+            transform: none;
+            background: #16161a;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            padding: 14px;
+            width: 260px;
+            display: none;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.55);
+            backdrop-filter: blur(6px);
+            z-index: 3000;
+        }
+
+        .app-panel.show {
+            display: block;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .app-tile {
+            background: #1d1d22;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.18s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .app-tile:hover {
+            background: #24242a;
+            border-color: rgba(166,196,138,0.8);
+            transform: translateY(-2px);
+        }
+
+        .app-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #a6c48a, #7ea96a);
+            display: grid;
+            place-items: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: #0d0d0f;
+        }
+
+        .app-label {
+            font-size: 12px;
+            color: #e4e3dd;
+        }
+
+        /* ===== Shared UI ===== */
+        .btn {
+            padding: 12px 24px;
+            background: #a6c48a;
+            color: #1c1c1f;
+            border-radius: 8px;
+            font-weight: 700;
+            transition: 0.25s;
+        }
+        .btn:hover { background: #9ab983; }
+
+        .card {
+            background: #1c1c1f;
+            padding: 40px;
+            border-radius: 14px;
+            box-shadow: 0 0 25px rgba(0,0,0,0.55);
+            border: 1px solid rgba(255,255,255,0.04);
+            text-align: center;
+        }
+
+        {% block styles %}{% endblock %}
+    </style>
+
+    {% block head_extra %}{% endblock %}
+</head>
+
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="top-nav">
+        <div class="logo-text">
+            <a href="/">Strop-WebUI</a>
+        </div>
+
+        <div class="right-menu">
+
+            <!-- Launcher -->
+            <div class="launcher-wrap">
+                <button class="launcher-btn" id="launcherBtn">
+                    <img src="/static/images/appgrid.svg">
+                </button>
+
+                <div class="app-panel" id="appPanel">
+                    <div class="app-grid">
+
+                        <a class="app-tile" href="/about">
+                            <div class="app-icon">?</div>
+                            <div class="app-label">About</div>
+                        </a>
+
+                        <a class="app-tile" href="/chat">
+                            <div class="app-icon">C</div>
+                            <div class="app-label">Chat</div>
+                        </a>
+
+                        <a class="app-tile" href="/admin">
+                            <div class="app-icon">A</div>
+                            <div class="app-label">ADMIN</div>
+                        </a>
+
+                        <a class="app-tile" href="/logout">
+                            <div class="app-icon">⎋</div>
+                            <div class="app-label">Log Out</div>
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Button -->
+            <a href="/profile" class="profile-btn">Profile</a>
+
+        </div>
+    </nav>
+
+    {% block content %}{% endblock %}
+    {% block scripts %}{% endblock %}
+
+    <!-- ===== Launcher Toggle Script ===== -->
+    <script>
+        const launcherBtn = document.getElementById("launcherBtn");
+        const appPanel = document.getElementById("appPanel");
+
+        function closePanel() {
+            appPanel.classList.remove("show");
+            launcherBtn.setAttribute("aria-expanded", "false");
+        }
+
+        launcherBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const open = appPanel.classList.toggle("show");
+            launcherBtn.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!appPanel.contains(e.target) && !launcherBtn.contains(e.target)) {
+                closePanel();
+            }
+        });
+
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") closePanel();
+        });
+    </script>
+
+</body>
+</html>

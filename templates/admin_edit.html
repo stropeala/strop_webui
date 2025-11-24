@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Edit User • Strop-WebUI{% endblock %}
+
+{% block styles %}
+.edit-wrapper{
+    display:flex; justify-content:center; align-items:center; height:100vh;
+}
+.edit-card{ width:480px; text-align:left; }
+label{ margin:12px 0 6px; display:block; color:#e0ded8; }
+input{
+    width:100%; padding:12px; border-radius:8px;
+    border:1px solid #2e2e31; background:#121214;
+    color:#fff; font-size:16px; font-weight:700;
+}
+.chk-row{
+    display:flex; gap:12px; align-items:center; margin-top:12px;
+}
+.chk-row input{ width:auto; }
+.actions{ margin-top:18px; display:flex; gap:10px; }
+{% endblock %}
+
+{% block content %}
+<div class="edit-wrapper">
+    <div class="card edit-card">
+        <h2>Edit User #{{ user.id }}</h2>
+
+        <form method="POST">
+            <label>Name</label>
+            <input name="name" value="{{ user.name }}" required>
+
+            <label>Email</label>
+            <input name="email" type="email" value="{{ user.email }}" required>
+
+            <div class="chk-row">
+                <label style="margin:0;">
+                    <input type="checkbox" name="is_approved" {% if user.is_approved %}checked{% endif %}>
+                    Approved
+                </label>
+
+                <label style="margin:0;">
+                    <input type="checkbox" name="is_admin" {% if user.is_admin %}checked{% endif %}>
+                    Admin
+                </label>
+            </div>
+
+            <div class="actions">
+                <button class="btn" type="submit">Save</button>
+                <a class="btn" href="/admin" style="background:#1d1d22; color:#f2efe6; border:1px solid rgba(255,255,255,0.06);">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

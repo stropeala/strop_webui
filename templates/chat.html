@@ -1,0 +1,523 @@
+{% extends "base.html" %}
+{% block title %}Chat • Strop-WebUI{% endblock %}
+
+{% block styles %}
+
+/* CHAT LAYOUT CONTAINER */
+.chat-container {
+    width: 80%;
+    max-width: 1400px;
+    height: 90vh;
+    margin: 30px auto 0 auto;
+    background: #1c1c1f;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 0 25px rgba(0,0,0,0.5);
+}
+
+/* HEADER */
+.chat-header {
+    padding: 20px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    background: #121214;
+    border-bottom: 1px solid #2e2e31;
+}
+.chat-header span {
+    color: #a6c48a;
+}
+
+/* CHAT MESSAGE AREA */
+.chat-box {
+    flex: 1;
+    padding: 25px;
+    overflow-y: auto;
+}
+.chat-box::-webkit-scrollbar { width: 10px; }
+.chat-box::-webkit-scrollbar-thumb {
+    background: #2e2e31;
+    border-radius: 5px;
+}
+
+/* MESSAGES */
+.message {
+    padding: 14px 18px;
+    margin: 10px 0;
+    border-radius: 12px;
+    max-width: 75%;
+    line-height: 1.55;
+    font-size: 15px;
+}
+
+.user-message {
+    background: #a6c48a;
+    color: #1c1c1f;
+    margin-left: auto;
+    border-radius: 12px 12px 0 12px;
+    font-weight: 700;
+    white-space: pre-wrap;
+}
+
+.bot-message {
+    background: #1f1f22;
+    border: 1px solid #2e2e31;
+    color: #f2efe6;
+    border-radius: 12px 12px 12px 0;
+    white-space: pre-wrap;
+}
+
+/* CODE BLOCKS */
+.message pre {
+    background: #0f0f10;
+    padding: 12px;
+    border-radius: 10px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+.message code {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+.bot-message a {
+    color: #a6c48a;
+    font-weight: bold;
+    text-decoration: none;
+}
+.bot-message a:hover {
+    color: #c4e3ab;
+}
+
+/* INPUT AREA */
+.input-area {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px;
+    background: #121214;
+    border-top: 1px solid #2e2e31;
+}
+
+/* MASCOT */
+.mascot-small {
+    width: 65px;
+    transition: transform 0.45s ease, opacity 0.3s ease;
+}
+.mascot-bounce {
+    transform: translateY(-10px);
+}
+
+/* TEXTAREA */
+textarea {
+    flex: 1;
+    padding: 14px 18px;
+    border-radius: 10px;
+    border: 1px solid #2e2e31;
+    background: #1c1c1f;
+    font-family: "JetBrains Mono", monospace !important;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.3px;
+    color: #ffffff;
+    resize: none;
+    overflow-y: hidden;
+    height: 50px;
+    max-height: 250px;
+    outline: none;
+    appearance: none;
+}
+
+/* BUTTONS */
+.input-area button {
+    padding: 14px 22px;
+    background: #a6c48a;
+    border: none;
+    border-radius: 10px;
+    color: #1c1c1f;
+    font-weight: 700;
+    cursor: pointer;
+}
+.input-area button:hover {
+    background: #9ab983;
+}
+
+/* STOP BUTTON OVERRIDE */
+#stopBtn {
+    background: #ff6b6b !important;
+}
+
+/* SCROLL-TO-BOTTOM BUTTON */
+#scrollBottomBtn {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    bottom: 250px;
+    background: #a6c48a;
+    color: #1c1c1f;
+    padding: 10px 14px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0,0,0,0.35);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 999;
+}
+#scrollBottomBtn.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* BACK-LINK */
+.back-link {
+    display: block;
+    text-align: center;
+    padding: 10px;
+    color: #a6c48a;
+    font-weight: 700;
+}
+
+/* MESSAGE FADE-IN */
+.fade-in {
+    opacity: 0;
+    animation: fadeIn 0.35s ease-out forwards;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* STREAM CURSOR */
+.stream-cursor {
+    display: inline-block;
+    width: 6px;
+    height: 1em;
+    background: #a6c48a;
+    margin-left: 4px;
+    animation: blinkCursor 1s infinite;
+}
+@keyframes blinkCursor {
+    0%, 50% { opacity: 1; }
+    50.01%, 100% { opacity: 0; }
+}
+
+{% endblock %}
+
+{% block content %}
+
+<!-- FLOATING SCROLL BUTTON -->
+<div id="scrollBottomBtn">↓</div>
+
+<!-- MAIN CONTAINER -->
+<div class="chat-container">
+
+    <!-- HEADER -->
+    <div class="chat-header">
+        <div style="display:flex; justify-content:center; align-items:center; gap:10px;">
+            <span>Model:</span>
+
+            <select id="modelSelect" style="
+                background:#1c1c1f;
+                border:1px solid #2e2e31;
+                color:white;
+                padding:8px 12px;
+                border-radius:8px;
+                font-family:'JetBrains Mono';
+                font-size:14px;
+            ">
+                {% for m in models %}
+                    <option value="{{ m }}">{{ m }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <!-- CHAT BOX -->
+    <div class="chat-box" id="chatBox"></div>
+
+    <!-- INPUT AREA -->
+    <form id="chatForm" class="input-area">
+
+        <!-- MASCOT -->
+        <img id="mascot" class="mascot-small"
+             src="/static/images/yuki_right.png"
+             alt="Yuki mascot">
+
+        <!-- TEXTAREA -->
+        <textarea id="userInput"
+                  placeholder="Type your message..."
+                  autocomplete="off"></textarea>
+
+        <!-- SEND BUTTON -->
+        <button type="submit">Send</button>
+
+        <!-- STOP BUTTON -->
+        <button type="button" id="stopBtn" style="display:none;">
+            Stop
+        </button>
+
+    </form>
+
+</div>
+
+<!-- BACK LINK -->
+<a href="/" class="back-link">← Back</a>
+
+{% endblock %}
+
+{% block scripts %}
+
+<!-- Markdown parser -->
+<script src="/static/js/marked.min.js"></script>
+
+<script>
+/* ==========================
+   GLOBAL STATE + ELEMENTS
+========================== */
+
+let conversation = [];
+let isStreaming = false;
+let autoScrollEnabled = true;
+let streamController = null;
+
+const chatBox = document.getElementById("chatBox");
+const mascot = document.getElementById("mascot");
+const userInput = document.getElementById("userInput");
+const chatForm = document.getElementById("chatForm");
+const stopBtn = document.getElementById("stopBtn");
+const scrollBtn = document.getElementById("scrollBottomBtn");
+
+/* ==========================
+   SCROLLING LOGIC
+========================== */
+
+function scrollToBottom() {
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+chatBox.addEventListener("scroll", () => {
+    const atBottom =
+        chatBox.scrollTop + chatBox.clientHeight >= chatBox.scrollHeight - 40;
+
+    if (atBottom) {
+        autoScrollEnabled = true;
+        scrollBtn.classList.remove("show");
+    } else {
+        autoScrollEnabled = false;
+        scrollBtn.classList.add("show");
+    }
+});
+
+scrollBtn.addEventListener("click", () => {
+    autoScrollEnabled = true;
+    scrollToBottom();
+});
+
+/* ==========================
+   MASCOT STATES
+========================== */
+
+function setMascotIdle() {
+    mascot.classList.remove("mascot-bounce");
+    mascot.src = "/static/images/yuki_right.png";
+}
+
+function setMascotThinking() {
+    mascot.src = "/static/images/yuki_up.png";
+    mascot.classList.add("mascot-bounce");
+}
+
+/* ==========================
+   ADD NEW MESSAGE BUBBLE
+========================== */
+
+function addMessage(content, sender) {
+    const msg = document.createElement("div");
+    msg.classList.add("message", "fade-in");
+
+    if (sender === "user") {
+        msg.classList.add("user-message");
+        msg.innerHTML = marked.parse(content);
+    } else {
+        msg.classList.add("bot-message");
+        msg.textContent = content;
+    }
+
+    chatBox.appendChild(msg);
+
+    if (autoScrollEnabled) scrollToBottom();
+
+    return msg;
+}
+
+/* ==========================
+   TEXTAREA AUTO-RESIZE
+========================== */
+
+let singleLineHeight = 50;
+const maxHeight = 250;
+
+function initTextareaHeight() {
+    const prevValue = userInput.value;
+
+    userInput.value = "";
+    userInput.style.height = "auto";
+
+    userInput.value = "X";
+    userInput.style.height = "auto";
+
+    singleLineHeight = userInput.scrollHeight;
+
+    userInput.value = prevValue;
+    userInput.style.height = singleLineHeight + "px";
+}
+
+if (userInput) {
+    initTextareaHeight();
+
+    userInput.addEventListener("input", () => {
+        userInput.style.height = "auto";
+        const needed = userInput.scrollHeight;
+
+        userInput.style.height =
+            Math.min(Math.max(needed, singleLineHeight), maxHeight) + "px";
+
+        setMascotIdle();
+    });
+
+    userInput.addEventListener("focus", setMascotIdle);
+
+    userInput.addEventListener("keydown", e => {
+        if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            chatForm.requestSubmit();
+        }
+    });
+}
+
+/* ==========================
+   STOP STREAMING
+========================== */
+
+stopBtn.addEventListener("click", () => {
+    if (streamController) streamController.abort();
+
+    stopBtn.style.display = "none";
+    isStreaming = false;
+    setMascotIdle();
+});
+
+/* ==========================
+   SEND CHAT MESSAGE
+========================== */
+
+if (chatForm) {
+    chatForm.addEventListener("submit", async e => {
+        e.preventDefault();
+        if (isStreaming) return;
+
+        const text = userInput.value.trim();
+        if (!text) return;
+
+        addMessage(text, "user");
+        conversation.push({ role: "user", content: text });
+
+        userInput.value = "";
+        userInput.style.height = singleLineHeight + "px";
+
+        const botMsgEl = addMessage("Yuki is thinking...", "bot");
+        setMascotThinking();
+
+        const model = document.getElementById("modelSelect").value;
+        streamController = new AbortController();
+        stopBtn.style.display = "block";
+        isStreaming = true;
+
+        try {
+            const response = await fetch("/api/stream-chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    message: text,
+                    model: model,
+                    memory: conversation
+                }),
+                signal: streamController.signal
+            });
+
+            if (!response.ok || !response.body) {
+                botMsgEl.textContent = "Error: failed to get response.";
+                return;
+            }
+
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder("utf-8");
+            let botText = "";
+            let isFirstChunk = true;
+            let renderCooldown = false;
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                if (!chunk) continue;
+
+                if (isFirstChunk) {
+                    botMsgEl.innerHTML = "";
+                    isFirstChunk = false;
+                }
+
+                botText += chunk;
+
+                if (!renderCooldown) {
+                    renderCooldown = true;
+
+                    botMsgEl.innerHTML =
+                        marked.parse(botText) +
+                        '<span class="stream-cursor"></span>';
+
+                    if (autoScrollEnabled) scrollToBottom();
+
+                    setTimeout(() => (renderCooldown = false), 40);
+                }
+            }
+
+            botMsgEl.innerHTML = botText.trim().length
+                ? marked.parse(botText)
+                : "…";
+
+            if (autoScrollEnabled) scrollToBottom();
+
+            conversation.push({
+                role: "assistant",
+                content: botText
+            });
+
+        } catch (err) {
+            if (err.name === "AbortError") {
+                botMsgEl.textContent = "Response stopped.";
+            } else {
+                botMsgEl.textContent = "Error: " + err.message;
+            }
+        } finally {
+            isStreaming = false;
+            stopBtn.style.display = "none";
+            setTimeout(() => setMascotIdle(), 400);
+        }
+    });
+}
+
+/* Initial scroll */
+scrollToBottom();
+
+</script>
+
+{% endblock %}

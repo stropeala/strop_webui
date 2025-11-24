@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{% block title %}Log In • Strop-WebUI{% endblock %}
+
+{% block styles %}
+.mascot, .mascot-angry {
+    width: 150px;
+    opacity: 0;
+    transition: opacity 0.25s ease-in;
+}
+.mascot.loaded, .mascot-angry.loaded {
+    opacity: 1;
+}
+.mascot-angry.loaded {
+    animation: shake 0.4s ease-in-out 0.25s;
+}
+@keyframes shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+    100% { transform: translateX(0); }
+}
+
+.speech-bubble {
+    background: #a6c48a;
+    color: #1c1c1f;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 8px;
+    position: absolute;
+    left: 50%;
+    bottom: 100%;
+    transform: translateX(-50%) translateY(-8px);
+    opacity: 0;
+    transition: opacity 0.25s ease-in;
+}
+.speech-bubble.loaded { opacity: 1; }
+.speech-bubble::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 8px solid #a6c48a;
+}
+
+.error {
+    color: #ff6b6b;
+    background: rgba(255, 50, 50, 0.1);
+    padding: 10px;
+    margin: 15px 0;
+    border-radius: 8px;
+}
+
+.login-card {
+    width: 380px;
+    position: relative;
+    margin: auto;
+}
+
+label {
+    display: block;
+    margin: 12px 0 6px;
+    font-size: 14px;
+    text-align: left;
+    color: #e0ded8;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #2e2e31;
+    background: #121214;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 16px;
+    outline: none;
+}
+input:focus {
+    border-color: #a6c48a;
+    box-shadow: 0 0 0 2px rgba(166, 196, 138, 0.35);
+}
+button:hover { background:#9ab983; }
+.no_account { margin-top:18px; color:#d5d3cd; }
+.no_account a { color:#a6c48a; font-weight:700; }
+{% endblock %}
+
+{% block content %}
+<div style="display:flex; justify-content:center; align-items:center; height:100vh;">
+    <div class="card login-card">
+
+        <div class="mascot-wrapper">
+            {% if error %}
+                <img class="mascot-angry" src="/static/images/yuki_angry.png">
+                <div class="speech-bubble">HEY!<br>That's wrong!</div>
+            {% else %}
+                <img class="mascot" src="/static/images/yuki_down.png">
+            {% endif %}
+        </div>
+
+        <h2>Log In</h2>
+
+        {% if error %}
+            <div class="error">Invalid email or password</div>
+        {% endif %}
+
+        <form method="POST">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email">
+
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+
+            <button class="btn" style="width:100%; margin-top:20px;">Login</button>
+        </form>
+
+        <div class="no_account">
+            New here?
+            <a href="/signup">Create an account!</a>
+            <br>
+            <a href="/">Welcome Page</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".mascot, .mascot-angry").forEach(m => m.classList.add("loaded"));
+    document.querySelectorAll(".speech-bubble").forEach(b => b.classList.add("loaded"));
+});
+</script>
+{% endblock %}

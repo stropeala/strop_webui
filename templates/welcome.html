@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Welcome • Strop-WebUI{% endblock %}
+
+{% block styles %}
+.welcome-wrapper {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+.mascot {
+    width:150px;
+    margin-bottom:20px;
+}
+p {
+    font-size:16px;
+    color:#d5d3cd;
+    margin-bottom:25px;
+}
+{% endblock %}
+
+{% block content %}
+<div class="welcome-wrapper">
+    <div class="card" style="width:420px;">
+        <img class="mascot" src="/static/images/yuki.png">
+        <h2>Strop-WebUI</h2>
+        <p>Welcome to my project! I hope you enjoy your stay.</p>
+        <p>To continue, please:</p>
+
+
+        <a href="/login" class="btn">Log In</a>
+        <a href="/signup" class="btn">Sign Up</a>
+    </div>
+</div>
+{% endblock %}

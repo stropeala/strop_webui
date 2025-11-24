@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% block title %}Admin • Strop-WebUI{% endblock %}
+
+{% block styles %}
+.admin-wrapper {
+    width: 90%;
+    max-width: 1200px;
+    margin: 30px auto 0 auto;
+    height: 88vh;
+    background: #1c1c1f;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,0.05);
+    box-shadow: 0 0 25px rgba(0,0,0,0.5);
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+}
+
+.admin-header {
+    padding: 18px 20px;
+    background: #121214;
+    border-bottom: 1px solid #2e2e31;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size: 18px;
+    font-weight: 700;
+}
+.admin-header .accent { color:#a6c48a; }
+
+.admin-actions {
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.btn-small {
+    padding: 8px 12px;
+    background: #a6c48a;
+    color: #1c1c1f;
+    border-radius: 8px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 13px;
+}
+.btn-small:hover { background:#9ab983; }
+
+.btn-danger {
+    background: #ff6b6b !important;
+    color:#1c1c1f !important;
+}
+.btn-danger:hover { filter: brightness(0.95); }
+
+.table-wrap {
+    flex:1;
+    overflow-y:auto;
+    padding: 18px;
+}
+.table-wrap::-webkit-scrollbar { width: 10px; }
+.table-wrap::-webkit-scrollbar-thumb {
+    background: #2e2e31; border-radius: 5px;
+}
+
+table {
+    width:100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+th, td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #2e2e31;
+    text-align:left;
+    vertical-align:middle;
+}
+th { color:#e0ded8; font-weight:700; background:#151518; position:sticky; top:0; }
+
+.badge {
+    display:inline-block;
+    padding:4px 8px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+    border:1px solid rgba(255,255,255,0.08);
+    background:#1f1f22;
+}
+.badge.green { color:#a6c48a; border-color:rgba(166,196,138,0.5); }
+.badge.red { color:#ff6b6b; border-color:rgba(255,107,107,0.5); }
+
+.row-actions {
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+}
+{% endblock %}
+
+{% block content %}
+<div class="admin-wrapper">
+
+    <div class="admin-header">
+        <div>
+            Admin Dashboard • <span class="accent">{{ users|length }}</span> users
+        </div>
+
+        <div class="admin-actions">
+            <!-- requested button -->
+            <a href="/admin/pending" class="btn-small">
+                Pending ({{ pending_count }})
+            </a>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:60px;">ID</th>
+                    <th>Email</th>
+                    <th>Name</th>
+                    <th style="width:130px;">Approved</th>
+                    <th style="width:110px;">Admin</th>
+                    <th style="width:320px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for u in users %}
+                <tr>
+                    <td>{{ u.id }}</td>
+                    <td>{{ u.email }}</td>
+                    <td>{{ u.name }}</td>
+
+                    <td>
+                        {% if u.is_approved %}
+                            <span class="badge green">Approved</span>
+                        {% else %}
+                            <span class="badge red">Pending</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if u.is_admin %}
+                            <span class="badge green">Admin</span>
+                        {% else %}
+                            <span class="badge">User</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <div class="row-actions">
+
+                            <!-- Approve -->
+                            {% if not u.is_approved %}
+                            <form method="POST" action="{{ url_for('main.admin_approve', user_id=u.id) }}">
+                                <button class="btn-small" type="submit">Approve</button>
+                            </form>
+                            {% endif %}
+
+                            <!-- Revoke -->
+                            {% if u.is_approved %}
+                            <form method="POST" action="{{ url_for('main.admin_revoke', user_id=u.id) }}">
+                                <button class="btn-small btn-danger" type="submit">Revoke</button>
+                            </form>
+                            {% endif %}
+
+                            <!-- Toggle admin -->
+                            <form method="POST" action="{{ url_for('main.admin_toggle_admin', user_id=u.id) }}">
+                                {% if u.is_admin %}
+                                    <button class="btn-small btn-danger" type="submit">Remove Admin</button>
+                                {% else %}
+                                    <button class="btn-small" type="submit">Make Admin</button>
+                                {% endif %}
+                            </form>
+
+                            <!-- Edit -->
+                            <a class="btn-small" href="{{ url_for('main.admin_edit_user', user_id=u.id) }}">
+                                Edit
+                            </a>
+
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}
