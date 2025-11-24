@@ -1,17 +1,16 @@
 from flask import (
-    Flask,
-    render_template,
-    request,
-    redirect,
-    url_for,
-    Response,
-    stream_with_context
+Flask,
+render_template,
+request,
+redirect,
+url_for,
+Response,
+stream_with_context
 )
 import ollama
 
 
 app = Flask(__name__)
-
 
 # Placeholder credentials
 USERNAME = "admin"
@@ -71,11 +70,11 @@ def login():
             return redirect(url_for("welcome"))
 
         return render_template(
-            "login.html",
+            "login_vechi.html",
             error = "Invalid username or password."
         )
 
-    return render_template("login.html")
+    return render_template("login_vechi.html")
 
 
 #------------------- WELCOME PAGE (/welcome) --------------------#
@@ -84,7 +83,7 @@ def login():
 @app.route("/welcome")
 def welcome():
 
-    return render_template("welcome.html")
+    return render_template("welcome_vechi.html")
 
 
 #------------------- CHAT PAGE (/chat) --------------------#
@@ -96,7 +95,7 @@ def chat():
     models = get_installed_models()
 
     return render_template(
-        "chat.html",
+        "chat_vechi.html",
         models = models
     )
 
