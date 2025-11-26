@@ -6,7 +6,7 @@ from flask import (
     redirect,           # Redirects user to another URL
     url_for,            # Generates URLs for routes
     request,            # Gets form data from POST requests
-    flash               # Shows temporary messages to the user #!!!!!!!!!!!!!!!!!!!!!!!!!!!! Disabled because it's not yet implemented into the frontend !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
+#TODO flash               Shows temporary messages to the user !!!!!!!!!!!!!!!!!!!!!!!!!!!! Disabled because it's not yet implemented into the frontend !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 )
 
 # Import login-related helpers from Flask-Login
@@ -16,10 +16,10 @@ from flask_login import (
 )
 
 # Import User model so admin routes can manage users
-from strop_webui.models import User
+from .models import User
 
 # Import the database session for saving user changes
-from strop_webui import db
+from . import db
 
 
 # Create Blueprint for general site routes

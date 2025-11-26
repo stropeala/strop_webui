@@ -49,7 +49,7 @@ def create_app():
 
 
     # Import models before creating database tables
-    from strop_webui.models import User
+    from .models import User
 
 
     # Create the database tables
@@ -83,17 +83,17 @@ def create_app():
 
 
     # Import and register the authentication blueprint
-    from strop_webui.auth import auth as auth_blueprint
+    from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint)
 
 
     # Import and register general routes
-    from strop_webui.main import main as main_blueprint
+    from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
 
 
     # Import and register chat routes
-    from strop_webui.chat import chat as chat_blueprint
+    from .chat import chat as chat_blueprint
     app.register_blueprint(chat_blueprint)
 
 

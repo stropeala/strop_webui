@@ -5,7 +5,7 @@ from flask import (
     request,            # Reads form data
     redirect,           # Redirects the user to another URL
     url_for,            # Generates URLs for routes
-    flash               # Displays temporary messages to the user #!!!!!!!!!!!!!!!!!!!!!!!!!!!! Disabled because it's not yet implemented into the frontend !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
+#TODO flash                Displays temporary messages to the user !!!!!!!!!!!!!!!!!!!!!!!!!!!! Disabled because it's not yet implemented into the frontend !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 )
 
 # Import Flask-Login tools for managing sessions and authentication
@@ -16,13 +16,13 @@ from flask_login import (
 )
 
 # Import our User model
-from strop_webui.models import User
+from .models import User
 
 # Import the database session so we can add new users
-from strop_webui import db
+from . import db
 
 # Password hashing (argon2) for secure password storage
-from strop_webui.security import pwd_context
+from .security import pwd_context
 
 
 # Create a Blueprint named auth
@@ -117,12 +117,13 @@ def signup_post():
 
     # Create a new user object with provided info
     new_user = User(
-        email=email,
-        name=name,
-        password=hashed_pw,
-        is_admin=is_first,      # First user gets admin privilege
-        is_approved=is_first    # First user is auto-approved
+        email = email,
+        name = name,
+        password = hashed_pw,
+        is_admin = is_first,      # First user gets admin privilege
+        is_approved = is_first    # First user is auto-approved
     )
+
 
 
     # Add user to DB session and save it
