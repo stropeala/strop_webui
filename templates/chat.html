@@ -212,13 +212,10 @@ textarea {
 
 {% block content %}
 
-<!-- FLOATING SCROLL BUTTON -->
 <div id="scrollBottomBtn">↓</div>
 
-<!-- MAIN CONTAINER -->
 <div class="chat-container">
 
-    <!-- HEADER -->
     <div class="chat-header">
         <div style="display:flex; justify-content:center; align-items:center; gap:10px;">
             <span>Model:</span>
@@ -239,26 +236,20 @@ textarea {
         </div>
     </div>
 
-    <!-- CHAT BOX -->
     <div class="chat-box" id="chatBox"></div>
 
-    <!-- INPUT AREA -->
     <form id="chatForm" class="input-area">
 
-        <!-- MASCOT -->
         <img id="mascot" class="mascot-small"
              src="/static/images/yuki_right.png"
              alt="Yuki mascot">
 
-        <!-- TEXTAREA -->
         <textarea id="userInput"
                   placeholder="Type your message..."
                   autocomplete="off"></textarea>
 
-        <!-- SEND BUTTON -->
         <button type="submit">Send</button>
 
-        <!-- STOP BUTTON -->
         <button type="button" id="stopBtn" style="display:none;">
             Stop
         </button>
@@ -267,20 +258,15 @@ textarea {
 
 </div>
 
-<!-- BACK LINK -->
 <a href="/" class="back-link">← Back</a>
 
 {% endblock %}
 
 {% block scripts %}
 
-<!-- Markdown parser -->
 <script src="/static/js/marked.min.js"></script>
 
 <script>
-/* ==========================
-   GLOBAL STATE + ELEMENTS
-========================== */
 
 let conversation = [];
 let isStreaming = false;
@@ -293,10 +279,6 @@ const userInput = document.getElementById("userInput");
 const chatForm = document.getElementById("chatForm");
 const stopBtn = document.getElementById("stopBtn");
 const scrollBtn = document.getElementById("scrollBottomBtn");
-
-/* ==========================
-   SCROLLING LOGIC
-========================== */
 
 function scrollToBottom() {
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -320,9 +302,6 @@ scrollBtn.addEventListener("click", () => {
     scrollToBottom();
 });
 
-/* ==========================
-   MASCOT STATES
-========================== */
 
 function setMascotIdle() {
     mascot.classList.remove("mascot-bounce");
@@ -334,9 +313,6 @@ function setMascotThinking() {
     mascot.classList.add("mascot-bounce");
 }
 
-/* ==========================
-   ADD NEW MESSAGE BUBBLE
-========================== */
 
 function addMessage(content, sender) {
     const msg = document.createElement("div");
@@ -357,9 +333,6 @@ function addMessage(content, sender) {
     return msg;
 }
 
-/* ==========================
-   TEXTAREA AUTO-RESIZE
-========================== */
 
 let singleLineHeight = 50;
 const maxHeight = 250;
@@ -402,9 +375,6 @@ if (userInput) {
     });
 }
 
-/* ==========================
-   STOP STREAMING
-========================== */
 
 stopBtn.addEventListener("click", () => {
     if (streamController) streamController.abort();
@@ -414,9 +384,6 @@ stopBtn.addEventListener("click", () => {
     setMascotIdle();
 });
 
-/* ==========================
-   SEND CHAT MESSAGE
-========================== */
 
 if (chatForm) {
     chatForm.addEventListener("submit", async e => {
@@ -515,7 +482,6 @@ if (chatForm) {
     });
 }
 
-/* Initial scroll */
 scrollToBottom();
 
 </script>

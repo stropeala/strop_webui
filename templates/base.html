@@ -6,7 +6,6 @@
     <title>{% block title %}Strop-WebUI{% endblock %}</title>
 
     <style>
-        /* ===== Fonts ===== */
         @font-face {
             font-family: "JetBrains Mono";
             src: url("/static/fonts/JetBrainsMono-2.304/webfonts/JetBrainsMono-Regular.woff2") format("woff2");
@@ -17,7 +16,6 @@
             font-weight: 700;
         }
 
-        /* ===== Global Theme ===== */
         body {
             margin: 0;
             padding-top: 60px;
@@ -32,7 +30,6 @@
 
         a { text-decoration: none; color: inherit; }
 
-        /* ===== Navbar ===== */
         .top-nav {
             width: 100%;
             height: 58px;
@@ -55,17 +52,13 @@
             font-weight: 700;
         }
 
-        /* ===== RIGHT MENU ===== */
         .right-menu {
             display: flex;
             align-items: center;
             gap: 14px;
-
-            /* === ADDED FIX === */
             height: 58px;
         }
 
-        /* ===== Profile Button ===== */
         .profile-btn {
             padding: 8px 14px;
             background: #1d1d22;
@@ -81,11 +74,8 @@
             color: #a6c48a;
         }
 
-        /* ===== Launcher Button ===== */
         .launcher-wrap {
             position: relative;
-
-            /* === ADDED FIX === */
             align-self: center !important;
         }
 
@@ -121,7 +111,6 @@
             pointer-events: none;
         }
 
-        /* ===== App Launcher Panel ===== */
         .app-panel {
             position: absolute;
             top: 48px;
@@ -184,7 +173,6 @@
             color: #e4e3dd;
         }
 
-        /* ===== Shared UI ===== */
         .btn {
             padding: 12px 24px;
             background: #a6c48a;
@@ -212,7 +200,6 @@
 
 <body>
 
-    <!-- ===== NAVBAR ===== -->
     <nav class="top-nav">
         <div class="logo-text">
             <a href="/">Strop-WebUI</a>
@@ -253,7 +240,6 @@
                 </div>
             </div>
 
-            <!-- Profile Button -->
             <a href="/profile" class="profile-btn">Profile</a>
 
         </div>
@@ -262,7 +248,6 @@
     {% block content %}{% endblock %}
     {% block scripts %}{% endblock %}
 
-    <!-- ===== Launcher Toggle Script ===== -->
     <script>
         const launcherBtn = document.getElementById("launcherBtn");
         const appPanel = document.getElementById("appPanel");
