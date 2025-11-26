@@ -1,5 +1,5 @@
 # Import the shared database instance created in __init__.py
-from strop_webui import db
+from . import db
 
 # Import UserMixin, which adds helpful default behaviors for user accounts
 # such as `is_authenticated`, `is_active`, `get_id()`, etc.
@@ -34,3 +34,17 @@ class User(UserMixin, db.Model):
 
     # Boolean: whether the user's account is approved by an admin
     is_approved = db.Column(db.Boolean, default=False)
+
+    def __init__(
+            self,
+            email: str,
+            password: str,
+            name: str = None,
+            is_admin: bool = False,
+            is_approved: bool = False
+    ):
+        self.email = email              # User's email address
+        self.password = password        # Hashed password string
+        self.name = name                # Display name
+        self.is_admin = is_admin        # Whether the user has admin privileges
+        self.is_approved = is_approved  # Whether an admin has approved the account
