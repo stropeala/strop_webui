@@ -6,7 +6,7 @@ from flask import (
     redirect,           # Redirects user to another URL
     url_for,            # Generates URLs for routes
     request,            # Gets form data from POST requests
-#TODO flash               Shows temporary messages to the user !!!!!!!!!!!!!!!!!!!!!!!!!!!! Disabled because it's not yet implemented into the frontend !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    #flash                Shows temporary messages to the user !!!!!!!!!!!!!!!!!!!!!!!!!!!! Disabled because it's not yet implemented into the frontend !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 )
 
 # Import login-related helpers from Flask-Login

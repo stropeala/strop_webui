@@ -5,7 +5,7 @@ from flask import (
     request,            # Reads form data
     redirect,           # Redirects the user to another URL
     url_for,            # Generates URLs for routes
-#TODO flash                Displays temporary messages to the user !!!!!!!!!!!!!!!!!!!!!!!!!!!! Disabled because it's not yet implemented into the frontend !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    #flash                Displays temporary messages to the user !!!!!!!!!!!!!!!!!!!!!!!!!!!! Disabled because it's not yet implemented into the frontend !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 )
 
 # Import Flask-Login tools for managing sessions and authentication
@@ -60,7 +60,7 @@ def login_post():
 
 
     # Check password using argon2 hashing
-    if not pwd_context.verify(password, user.password):
+    if not pwd_context.verify(password, user.password): # type: ignore[attr-defined]
         # flash("Incorrect password.")
         return redirect(url_for("auth.login"))
 
@@ -107,7 +107,7 @@ def signup_post():
 
 
     # Hash the password using Argon2
-    hashed_pw = pwd_context.hash(password)
+    hashed_pw = pwd_context.hash(password) # type: ignore[attr-defined]
 
 
     # See if this is the first user ever created
@@ -117,8 +117,8 @@ def signup_post():
 
     # Create a new user object with provided info
     new_user = User(
-        email = email,
-        name = name,
+        email = email, # type: ignore[attr-defined]
+        name = name, # type: ignore[attr-defined]
         password = hashed_pw,
         is_admin = is_first,      # First user gets admin privilege
         is_approved = is_first    # First user is auto-approved

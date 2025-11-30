@@ -39,7 +39,7 @@ class User(UserMixin, db.Model):
             self,
             email: str,
             password: str,
-            name: str = None,
+            name: str = None, # type: ignore[attr-defined]
             is_admin: bool = False,
             is_approved: bool = False
     ):
