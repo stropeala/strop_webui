@@ -1,0 +1,2 @@
+FLASK_APP=__init__
+FLASK_DEBUG=1
